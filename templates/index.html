@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Control de Estudios</title>
+    <!-- Bootstrap para diseño rápido y moderno -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="mb-4">🔍 Buscador de Estudiantes e Información de Emergencia</h2>
+        
+        <!-- Formulario de Búsqueda -->
+        <form method="GET" action="/" class="row g-3 p-3 bg-white rounded shadow-sm mb-4">
+            <div class="col-md-4">
+                <label class="form-label">Nombre del Estudiante</label>
+                <input type="text" name="nombre" class="form-control" placeholder="Ej. Juan">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Grado</label>
+                <select name="grado" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="1er Grado">1er Grado</option>
+                    <option value="2do Grado">2do Grado</option>
+                    <option value="3er Grado">3er Grado</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Sección</label>
+                <input type="text" name="seccion" class="form-control" placeholder="Ej. A">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Sexo</label>
+                <select name="sexo" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="M">M</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+
+        <!-- Tabla de Resultados -->
+        <div class="table-responsive bg-white rounded shadow-sm">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Edad (Real)</th>
+                        <th>Grado/Sec</th>
+                        <th>Sexo</th>
+                        <th>Representante</th>
+                        <th>Contacto de Emergencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for est in estudiantes %}
+                    <tr>
+                        <td><strong>{{ est.nombre }}</strong></td>
+                        <td><span class="badge bg-info text-dark">{{ est.edad }} años</span></td>
+                        <td>{{ est.grado }} - "{{ est.seccion }}"</td>
+                        <td>{{ est.sexo }}</td>
+                        <td>{{ est.representante }}</td>
+                        <td><span class="text-danger fw-bold">📞 {{ est.telefono_emergencia }}</span></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted p-4">No se encontraron estudiantes con esos filtros.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
