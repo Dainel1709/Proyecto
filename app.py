@@ -23,7 +23,6 @@ def index():
     # Capturar los filtros que el usuario escribe en el HTML
     filtro_nombre = request.args.get('nombre', '').lower()
     filtro_grado = request.args.get('grado', '')
-    filtro_seccion = request.args.get('seccion', '').upper()
     filtro_sexo = request.args.get('sexo', '')
 
     estudiantes_filtrados = []
@@ -39,11 +38,10 @@ def index():
             # 2. Aplicar la lógica de filtros de búsqueda
             match_nombre = filtro_nombre in fila['nombre'].lower()
             match_grado = not filtro_grado or fila['grado'] == filtro_grado
-            match_seccion = not filtro_seccion or fila['seccion'] == filtro_seccion
             match_sexo = not filtro_sexo or fila['sexo'] == filtro_sexo
 
             # Si el estudiante cumple con todos los filtros, se añade a la lista
-            if match_nombre and match_grado and match_seccion and match_sexo:
+            if match_nombre and match_grado and match_sexo:
                 estudiantes_filtrados.append(fila)
 
     # Enviar los resultados al archivo HTML

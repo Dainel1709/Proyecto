@@ -25,10 +25,7 @@
                     <option value="3er Grado">3er Grado</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <label class="form-label">Sección</label>
-                <input type="text" name="seccion" class="form-control" placeholder="Ej. A">
-            </div>
+            
             <div class="col-md-2">
                 <label class="form-label">Sexo</label>
                 <select name="sexo" class="form-select">
@@ -49,7 +46,7 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Edad (Real)</th>
-                        <th>Grado/Sec</th>
+                        <th>Grado</th>
                         <th>Sexo</th>
                         <th>Representante</th>
                         <th>Contacto de Emergencia</th>
@@ -60,7 +57,7 @@
                     <tr>
                         <td><strong>{{ est.nombre }}</strong></td>
                         <td><span class="badge bg-info text-dark">{{ est.edad }} años</span></td>
-                        <td>{{ est.grado }} - "{{ est.seccion }}"</td>
+                        <td>{{ est.grado }} </td>
                         <td>{{ est.sexo }}</td>
                         <td>{{ est.representante }}</td>
                         <td><span class="text-danger fw-bold">📞 {{ est.telefono_emergencia }}</span></td>

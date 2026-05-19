@@ -1,4 +1,4 @@
-id,nombre,fecha_nacimiento,grado,seccion,sexo,representante,telefono_emergencia
-1,Juan Perez,2015-05-10,1er Grado,A,M,Maria Perez,555-0192
-2,Ana Gomez,2014-11-23,2do Grado,B,F,Carlos Gomez,555-4839
-3,Luis Rodriguez,2013-02-15,3er Grado,A,M,Laura Ruiz,555-8821
+id,nombre,fecha_nacimiento,grado,sexo,representante,telefono_emergencia
+1,Juan Perez,2015-05-10,1er Grado,M,Maria Perez,555-0192
+2,Ana Gomez,2014-11-23,2do Grado,F,Carlos Gomez,555-4839
+3,Luis Rodriguez,2013-02-15,3er Grado,M,Laura Ruiz,555-8821
