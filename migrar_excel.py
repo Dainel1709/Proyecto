@@ -10,13 +10,20 @@ COL_CEDULA_ESCOLAR = 1
 COL_CEDULA_IDENTIDAD = 2
 COL_APELLIDOS_EST = 3
 COL_NOMBRES_EST = 4
+COL_LUGAR_NAC = 5
+COL_DIA_NACIMIENTO = 7
+COL_MES_NACIMIENTO = 8
+COL_ANIO_NACIMIENTO = 9
+COL_GERNERO = 10
 
 # Columnas adicionales (si el Excel las tiene)
-COL_LUGAR_NAC = 10
-COL_REPR_NOMBRE = 11
-COL_REPR_CONTACTO = 12
-COL_REPR_CORREO = 13
-COL_REPR_PARENTESCO = 14
+
+COL_REPR_APELLIDO = 16
+COL_REPR_NOMBRE = 17
+COL_REPR_CEDULA_IDENTIDAD = 18
+COL_REPR_CONTACTO = 19
+COL_REPR_DIRECCION = 20
+COL_REPR_PARENTESCO = 21
 # =========================================================================
 
 def limpiar_dato(valor):
@@ -57,30 +64,37 @@ def migrar_por_grados_separados():
                     val_c1 = obtener_valor(row, COL_CEDULA_ESCOLAR)
                     val_c2 = obtener_valor(row, COL_CEDULA_IDENTIDAD)
                     
-                    # Si el número de lista (col 0) está vacío, suele ser una fila de relleno o cabecera
-                    if not obtener_valor(row, COL_NUMERO_LISTA).isdigit():
-                        continue
-                    
+                    # Si el número de lista 
+                    numero_de_lista = obtener_valor(row, COL_NUMERO_LISTA)
                     # 2. Datos del Estudiante
                     apellidos = obtener_valor(row, COL_APELLIDOS_EST)
                     nombres = obtener_valor(row, COL_NOMBRES_EST)
-                    
-                    # 3. Datos adicionales
                     lugar_nac = obtener_valor(row, COL_LUGAR_NAC)
+                    dia = obtener_valor(row, COL_DIA_NACIMIENTO)
+                    mes = obtener_valor(row, COL_MES_NACIMIENTO)
+                    anio = obtener_valor(row, COL_ANIO_NACIMIENTO)
+                    genero = obtener_valor(row, COL_GERNERO)
+                    # 3. Datos adicionales
+                    repr_apellidos = obtener_valor(row, COL_REPR_APELLIDO)
                     repr_nom = obtener_valor(row, COL_REPR_NOMBRE)
+                    repr_cedula = obtener_valor(row, COL_REPR_CEDULA_IDENTIDAD)
                     repr_cont = obtener_valor(row, COL_REPR_CONTACTO)
-                    repr_mail = obtener_valor(row, COL_REPR_CORREO)
-                    parentesco = obtener_valor(row, COL_REPR_PARENTESCO)
+                    repr_direccion = obtener_valor(row, COL_REPR_DIRECCION)
+                    repr_parentesco = obtener_valor(row, COL_REPR_PARENTESCO)
                     
                     estudiantes_grado.append({
+                        'Número de lista': numero_de_lista,
                         'Cédula Escolar': val_c1 if val_c1 else "No posee",
                         'Cédula Identidad': val_c2 if val_c2 else "No posee",
                         'Estudiante': f"{nombres} {apellidos}".strip(),
                         'Lugar de Nacimiento': lugar_nac,
-                        'Representante': repr_nom,
+                        'Genero': genero,
+                        'Fecha de nacimiento':f"{dia}/{mes}/{anio}".strip(),
+                        'Representante': f"{repr_nom} {repr_apellidos}".strip(),
                         'Contacto': repr_cont,
-                        'Correo Electrónico': repr_mail,
-                        'Parentesco': parentesco
+                        'Cédula': repr_cedula,
+                        'Dirección': repr_direccion,
+                        'Parentesco': repr_parentesco
                     })
                 
                 if estudiantes_grado:

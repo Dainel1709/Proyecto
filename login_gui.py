@@ -183,7 +183,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
     # --- LÓGICA DE LECTURA DE ARCHIVOS POR SEPARADO ---
     def cargar_estudiantes_por_grado(self, grado_seleccionado):
         # Convertimos el nombre del combo a un formato de archivo claro
-        # Ejemplo: "4to Grado" -> "4to_grado.csv"
+        # Ejemplo: "Matrivula 4to Grado" -> "4to_grado.csv"
         nombre_archivo = f"{grado_seleccionado.lower().replace(' ', '_')}.csv"
         
         self.pantalla_datos.configure(state="normal")
@@ -215,7 +215,7 @@ class AppEscuela(ctk.CTk):
         super().__init__()
 
         self.title("Sistema de Gestión - U.E. Juana Ramírez")
-        self.geometry("1100x650")
+        self.geometry("1250x650")
         self.resizable(True, True)
 
         # Arrancar maximizado directamente
