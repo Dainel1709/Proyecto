@@ -1,22 +1,22 @@
-Cédula Escolar,Cédula Identidad,Estudiante,Lugar de Nacimiento,Representante,Contacto,Correo Electrónico,Parentesco
-37074940,Rivas Ortiz,merida Anthonela,F,x,12,12,12
-11515295024,No posee,GABRIELA VALENTINA RANGEL BALZA,F,X,,8,8
-11614588507,No posee,Ainara Isabella Trejo Parra,F,X,,10,10
-11622655351,No posee,Santiago Andres Castillo Castillo,M,X,,10,10
-11622655622,No posee,Mauricio Manuel Montalvo Marquina,M,X,,10,10
-11625643429,No posee,Cesar Andres Uzcategui Garcia,M,X,,10,10
-11717129491,No posee,Nohemi Inmaculada Rojo,F,X,,8,8
-11717864948,No posee,Arianny Jose Valentina Pacheco Antunez,F,X,,10,10
-11717894774,No posee,MariPaz Dasha Rangel Albarran,F,X,,8,8
-11718797834,No posee,Luis Sebastian Rangel Calderon,M,X,,8,8
-11719071798,No posee,Dilber Enmanuel Avendaño Bastidas,M,X,,8,8
-11720010470,No posee,Abel David Colmenares Garcia,M,X,,10,10
-11720118025,No posee,Yeisson David Hernandez Davila,M,X,,10,10
-11720832435,No posee,Laura Sofia Rondon Parra,F,X,,8,8
-11722655443,No posee,Arianni Chinquinquira Davila Davila,F,X,,10,10
-11722655654,No posee,Fernanda Salome Prada Romerro,F,X,,10,10
-11725150838,No posee,Richard YHOSUE Davila Reyes,M,X,,10,10
-11725643421,No posee,londra Rosuet Parra Alarcon,F,X,,8,8
-11814699917,No posee,Paula Andre Araujo Davila,F,X,,8,8
-11820435077,No posee,Salome Alejandra Davila Araujo,F,X,,8,8
-11313966325,No posee,Vitalia Samantha Davila Gil,F,X,,8,8
+Número de lista,Cédula Escolar,Cédula Identidad,Estudiante,Lugar de Nacimiento,Genero,Fecha de nacimiento,Representante,Contacto,Cédula,Dirección,Parentesco
+1,37074940,Rivas Ortiz,merida Anthonela,merida,F,8//2015,Rita del Coromoto Rivas Avendaño,4262680485,25886241,San Pedro,Madre
+2,11515295024,No posee,GABRIELA VALENTINA RANGEL BALZA,MERIDA,F,24/10/2015,MARELVY JOSEFINA BALZA BARRIOS,41226198111,15295024,CALLE BOLIVAR,MADRE
+3,11614588507,No posee,Ainara Isabella Trejo Parra,Merida,F,24/10/2016,Evelia Josefina Parra Parra,0416-0127817,14588507,Mucuruba Mococon Alto,MADRE
+4,11622655351,No posee,Santiago Andres Castillo Castillo,Merida,M,16/8/2016,Paola Dayana Castillo Jauregui,0412-5086093,22655351,Mucuruba Sector Mococon alto,Madre
+5,11622655622,No posee,Mauricio Manuel Montalvo Marquina,Vigia,M,3/11/2016,Katerine Marquina,0412-4878312,22655622,Mucuruba Calle 23 de enero,Madre
+6,11625643429,No posee,Cesar Andres Uzcategui Garcia,Merida,M,27/3/2016,hedylca danelys Garcia,0412-1320265,25643429,Mucuruba sector las Cuevas,Madre
+7,11717129491,No posee,Nohemi Inmaculada Rojo,Mucuchies,F,10/11/2017,Maria Alejandra Rojo,0412-6353590,17129491,Mucuruba Calle Paez,Madre
+8,11717864948,No posee,Arianny Jose Valentina Pacheco Antunez,Mucuchies,F,26/10/2017,Jhoannis De los Angeles AntunezGuillen,0412-5162541,17864948,Mucuruba Calle Urdaneta,Madre
+9,11717894774,No posee,MariPaz Dasha Rangel Albarran,Merida,F,12/12/2017,Maria Yuliana Albarran Albarran,0412-5477476,17894774,Mucuruba sector la bomba,Madre
+10,11718797834,No posee,Luis Sebastian Rangel Calderon,Merida,M,12/10/2017,Martha Lizeth Calderon Correa,0412-5162541,17864948,Mucuruba Calle Paez,Madre
+11,11719071798,No posee,Dilber Enmanuel Avendaño Bastidas,Merida,M,18/5/2017,Maria Avigail Bastidas Henriquez,0416-2577188,19071798,Mcuruba sector Alberto Carnevalli,Madre
+12,11720010470,No posee,Abel David Colmenares Garcia,Barquisimeto,M,7/8/2017,Behilimar Garcia Castillo,0412-1560930,20010470,SECTOR Nuevo escaguey,Madre
+13,11720118025,No posee,Yeisson David Hernandez Davila,Mucuchies,M,28/2/2017,Yeribeth Del Carmen Davila Davila,0412-2291551,20118025,Mucuruba sector mococon bajo,Madre
+14,11720832435,No posee,Laura Sofia Rondon Parra,Mucuchies,F,10/11/2017,Maribel Del carmen Rondon Parra,0412-0539883,20832435,Mucuruba Sector Mococon Alto,Madre
+16,11722655443,No posee,Arianni Chinquinquira Davila Davila,Mucuchies,F,18/11/2017,Maria de la paz Parra Parra,0412-4264320,9475732,Mucuba Mococon Alto,Abuela
+17,11722655654,No posee,Fernanda Salome Prada Romerro,Merida,F,17/8/2017,Erisbeth Katiusca Romero Romero,0412-5252891,22655654,Mucuruba sector San Pedro,Madre
+18,11725150838,No posee,Richard YHOSUE Davila Reyes,Mucuchies,M,26/12/2017,Ivett Yoneivis Reyes Castilo,0412-3898519,25150838,Mucuruba sector mesa de mococon,Madre
+19,11725643421,No posee,londra Rosuet Parra Alarcon,Mucuchies,F,4/12/2017,Dinardi Coromoto Alarcon Quintero,0412-2388895,25643421,Mucuruba SECTOR Alberto Carnevalli,Madre
+20,11814699917,No posee,Paula Andre Araujo Davila,Merida,F,5/1/2017,Ani Morelvis Davila Briceño,0416-3435121,14699917,sector la granja cacute,MADRE
+21,11820435077,No posee,Salome Alejandra Davila Araujo,Mucuchies,F,26/1/2018,Yathidyce Comoto Araujo Arismendi,0412-7641205,20435077,Mucuruba sector Mesa de Mococon,Madre
+22,11313966325,No posee,Vitalia Samantha Davila Gil,Merida,F,15/8/2017,Virginia Del Carmen Gil Barrios,0412-4906131,13966325,sect. la becerrera cacute,Madre

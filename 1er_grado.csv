@@ -1,27 +1,27 @@
-Cédula Escolar,Cédula Identidad,Estudiante,Lugar de Nacimiento,Representante,Contacto,Correo Electrónico,Parentesco
-11825643429,No posee,Rosmer Josué García García,M,,RP,8,8
-11822988610,No posee,Carlos Santiago Romero Gil,M,RG,,8,8
-11825886241,No posee,Derek Geremias Rivas Avendaño,M,RG,,,
-11826381170,No posee,Enderlyn Dauribel Albarran Rivera,F,RG,,12,14
-11913022479,No posee,Smith Johander Moreno Avendaño,M,RG,,,
-11915921661,No posee,Camila Sarahi Sanchez Balza,F,RG,,8,8
-11917340375,No posee,Jesús David Quintero Parra,M,RG,,8,8
-11917341560,No posee,Franyeli Sofia Hernández García,F,RG,,8,8
-11917864948,No posee,Vianny Sophia N. Pacheco Antunez,F,RG,,,
-11918310827,No posee,Samantha Nazareth Vera Sánches,F,RG,,10,10
-11920197143,No posee,Orianny Sofía Peña Ruiz,F,RG,,,
-11920850552,No posee,Dominic Julian Santiago Sulbarán,M,RG,,,
-11920851558,No posee,Gennesis Sharay Fernández Quintero,F,RG,,8,8
-11921182185,No posee,Eduar José Tellez Espinoza,M,RG,,10,10
-11922655500,No posee,María Anthonella Salcedo Avendaño,F,RG,,8,8
-11922655623,No posee,Cristian Gabriel Moreno Prada,M,RG,,8,8
-11922655654,No posee,Fabiana Ivone Prada Romero,F,RG,,,
-11925150838,No posee,Maydane Daireth Dávila Reyes,F,RG,,,
-11925560225,No posee,Marian Ximena Trejo Parra,F,RG,,8,8
-11925866814,No posee,Anny Gabriela Calderón Laguna,F,RG,,,
-11926558801,No posee,Dulian Ismael Quintero Rangel,M,RG,,6,8
-11927780581,No posee,Arianna Sofía Rivas Castillo,F,RG,,4,6
-11927780603,No posee,Santiago Elias Trejo Albarrán,M,RG,,8,8
-11928710128,No posee,Amelia Lucia Santos Rangel,F,RG,,,
-12022655266,No posee,Yhorfran Enmanuel Quintero Soto,M,RG,,,
-12022655341,No posee,Elha Arengi Arcia Quintero,F,RG,,8,8
+Número de lista,Cédula Escolar,Cédula Identidad,Estudiante,Lugar de Nacimiento,Genero,Fecha de nacimiento,Representante,Contacto,Cédula,Dirección,Parentesco
+1,11825643429,No posee,Rosmer Josué García García,Mérida,M,9/5/2018,HEDILCA DANELYS GARCIA GARCIA,4121320265,25.643.429,Sector las cuevas,MADRE
+2,11822988610,No posee,Carlos Santiago Romero Gil,Mérida,M,26/6/2018,JONNY JESUS ROMERO,4120772839,22.988.610,Final calle paez,PADRE
+3,11825886241,No posee,Derek Geremias Rivas Avendaño,Mucuchíes,M,30/8/2018,RITA DEL COROMOTO RIVAS AVENDAÑO,4262780485,25.886.241,,MADRE
+4,11826381170,No posee,Enderlyn Dauribel Albarran Rivera,Timotes,F,27/9/2018,MARIBEL DEL CARMEN RIVERA LOBO,4127218526,26381170,Sector mococon,MADRE
+5,11913022479,No posee,Smith Johander Moreno Avendaño,Mucuruba,M,31/5/2019,JOHOLIMAR AVENDAÑO ROMERO,4169200167,1322.479,Calle Bolívar c/n 22 frente a la guardia,MADRE
+6,11915921661,No posee,Camila Sarahi Sanchez Balza,Merida,F,19/10/2019,ELVIA FABIOLA BALZA,4129615303,15.921.661,Calle Bolívar,MADRE
+7,11917340375,No posee,Jesús David Quintero Parra,Mérida,M,27/4/2019,ELVIA KARINA PARRA,4125095496,17.340.375,Sector San Pedro,MADRE
+8,11917341560,No posee,Franyeli Sofia Hernández García,Mucuchíes,F,5/12/2019,GABRIELA JOSE GARCÍA LONDOÑO,4120125970,17.341.560,Sector mococon,MADRE
+9,11917864948,No posee,Vianny Sophia N. Pacheco Antunez,Mucuchíes,F,16/9/2019,JHOANNIS ANTUNEZ,4125162541,17.864.948,Calle Urdaneta,MADRE
+10,11918310827,No posee,Samantha Nazareth Vera Sánches,Mucuchíes,F,22/4/2019,YESSICA M. SANCHEZ,4124726207,18.310.827,Sector Leticia,MADRE
+11,11920197143,No posee,Orianny Sofía Peña Ruiz,Mucuchíes,F,17/3/2019,MARIELA RUIZ,4126170542,20.197.143,Calle Sucre,MADRE
+12,11920850552,No posee,Dominic Julian Santiago Sulbarán,Mucuchíes,M,16/5/2019,SULEIMA E. SULBARAN,4126190239,20.850.552,Sector Leticia,MADRE
+13,11920851558,No posee,Gennesis Sharay Fernández Quintero,Tovar,F,18/4/2019,YUSMELY QUINTERO,4120782107,20.851.558,Sector La bomba,MADRE
+14,11921182185,No posee,Eduar José Tellez Espinoza,Mérida,M,4/10/2019,MARIA JOSEFINA ESPINOZA DE TELLEZ,4126402013,21.182.185,,MADRE
+15,11922655500,No posee,María Anthonella Salcedo Avendaño,Merida,F,3/4/2019,CANDI AVENDAÑO,4165900331,22.655.341,Sector Alberto carnevalli,MADRE
+16,11922655623,No posee,Cristian Gabriel Moreno Prada,Mucuchíes,M,11/11/2019,MARIA GUADALUPE PRADA,4164198303,22.655.623,Sector Leticia,MADRE
+17,11922655654,No posee,Fabiana Ivone Prada Romero,Mucuchíes,F,29/9/2019,ERISVETH ROMERO,4125252897,22.655.654,Sector San Pedro,MADRE
+18,11925150838,No posee,Maydane Daireth Dávila Reyes,Mucuchíes,F,11/11/2019,IVETT YONEIVIS REYES CASTILLO,4123898519,25.150.838,Mucuruba mesa de mococon,MADRE
+19,11925560225,No posee,Marian Ximena Trejo Parra,Mucuchíes,F,28/11/2019,YESIMAR YUBISAY PARRA PARRA,4127244102,25.560.225,Sector Leticia casa D-32,MADRE
+20,11925866814,No posee,Anny Gabriela Calderón Laguna,Mucuchíes,F,15/12/2019,YECNI CAROLINA LAGUMA,4260488951,25.886.814,Calle Urdaneta,MADRE
+21,11926558801,No posee,Dulian Ismael Quintero Rangel,Mérida,M,11/9/2019,LEUDYS ESTEFANI RANGEL CASTILLO,4120731274,26.558.801,Sector Leticia,MADRE
+22,11927780581,No posee,Arianna Sofía Rivas Castillo,Mérida,F,18/11/2019,MAILYN TATIANA CASTILLO,4126406871,27.780.581,Mococon Alto,MADRE
+23,11927780603,No posee,Santiago Elias Trejo Albarrán,Mucuchíes,M,20/4/2019,GENESIS  DEL  V. ALBARRAN,4124976607,27.780.603,Mococon Alto,MADRE
+24,11928710128,No posee,Amelia Lucia Santos Rangel,Mucuchíes,F,6/5/2019,ELISA TAIRU RANGEL REYES,4164426808,28710128,Mococon alto,MADRE
+25,12022655266,No posee,Yhorfran Enmanuel Quintero Soto,Mucuchíes,M,12/1/2020,KEILA YAMILET SOTO,,22.655.266,sector leticia,MADRE
+26,12022655341,No posee,Elha Arengi Arcia Quintero,mucuchies,F,15/3/2020,YUNAIKA FLORENGI QUINTERO QUINTERO,416-5900331,22.655.341,sector Alberto carnevalli,MADRE

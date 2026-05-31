@@ -60,13 +60,17 @@ def migrar_por_grados_separados():
                 estudiantes_grado = []
                 
                 for index, row in df.iterrows():
-                    # 1. Obtener Cédulas
+                    
+                    #1 número de lista 
+                    numero_de_lista = obtener_valor(row, COL_NUMERO_LISTA)
+                    
+                    if not numero_de_lista or not str(numero_de_lista).replace('.0', '').isdigit():
+                        continue
+                    
+                    # 2. Datos del Estudiante
                     val_c1 = obtener_valor(row, COL_CEDULA_ESCOLAR)
                     val_c2 = obtener_valor(row, COL_CEDULA_IDENTIDAD)
                     
-                    # Si el número de lista 
-                    numero_de_lista = obtener_valor(row, COL_NUMERO_LISTA)
-                    # 2. Datos del Estudiante
                     apellidos = obtener_valor(row, COL_APELLIDOS_EST)
                     nombres = obtener_valor(row, COL_NOMBRES_EST)
                     lugar_nac = obtener_valor(row, COL_LUGAR_NAC)

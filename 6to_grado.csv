@@ -1,19 +1,19 @@
-Cédula Escolar,Cédula Identidad,Estudiante,Lugar de Nacimiento,Representante,Contacto,Correo Electrónico,Parentesco
-No posee,36139256,Aransa del Valle Dàvila Parra,F,x,,14,14
-No posee,36159879,Christian Rafael Lara Quintero,M,x,,16,16
-No posee,36171243,Gabriel David Reyes Castillo,M,x,,16,16
-No posee,36198063,Lusiary Camila Moreno Marcano,F,x,,16,16
-No posee,36229779,Diego Armando Astorga Sànchez,M,x,,14,14
-No posee,36277511,Santiago Alejandro Ramirez Mèndez,M,x,,12,12
-No posee,36407709,Daryely Valentina Jerez Garcia,F,x,,16,16
-No posee,36651179,Jossemily Nathaly Manzanilla Dàvila,F,x,,12,12
-No posee,36654363,Luis Fernando Molina Rangel,M,x,,16,14
-No posee,36673772,Jhesser Leonardo Pirela Rangel,M,x,,14,14
-No posee,36691696,Andrès Ignacio Prada Parra,M,x,,16,16
-No posee,36703405,Marialis Inmaculada Avendaño Bastidas,F,x,,14,14
-No posee,36750939,Mariangel Yerimar Barrios Barrios,F,x,,16,14
-No posee,36785012,Thiago Aaron Morillo Parra,M,x,,16,16
-No posee,36800323,Sebastian Alejandro Castillo Camargo,M,x,,16,14
-No posee,36809432,Juan Diego Castillo Castillo,M,x,,12,12
-No posee,36814435,Thomàs de Jesùs Parra Aldana,M,x,,16,16
-No posee,36838572,Yhosue Alejandro Fernàndez Quintero,M,x,,16,16
+Número de lista,Cédula Escolar,Cédula Identidad,Estudiante,Lugar de Nacimiento,Genero,Fecha de nacimiento,Representante,Contacto,Cédula,Dirección,Parentesco
+1,No posee,36139256,Aransa del Valle Dàvila Parra,Mucuchies,F,22/1/2014,Maireth Carolina Parra Briceño,0412 6717896,19486274,Mococon Alto,Madre
+2,No posee,36159879,Christian Rafael Lara Quintero,Mèrida,M,10/7/2014,Luisa Eulalia Quintero Rangel,0426 4761376,14700233,Calle Urdaneta,Madre
+3,No posee,36171243,Gabriel David Reyes Castillo,Mèrida,M,25/5/2014,Ivett Yoneivis Reyes Castillo,0412 3898519,25150838,Mesa de Mococón,Madre
+4,No posee,36198063,Lusiary Camila Moreno Marcano,Mèrida,F,30/5/2014,Yelimar del Valle Marcano Parra,0412 2786057,22655652,Calle 23 de Enero,Madre
+5,No posee,36229779,Diego Armando Astorga Sànchez,Mèrida,M,28/8/2014,Maria Fernanda Sanchez Parra,0412 0605336,17238934,Calle Paez,Madre
+6,No posee,36277511,Santiago Alejandro Ramirez Mèndez,Mucuchies,M,22/6/2014,Frallielmary del Carmen Mendez Rivera,0412 2093752,20847293,Sector Leticia,Madre
+7,No posee,36407709,Daryely Valentina Jerez Garcia,Merida,F,2/8/2013,Hedilca Valentina Garcia Garcia,0412 1320265,25643429,Las Cuevas,Madre
+8,No posee,36651179,Jossemily Nathaly Manzanilla Dàvila,Mucuchies,F,5/4/2014,Johana Carolina Manzanilla Dávila,0426 4546647,17521672,Alberto Carnevalli,Madre
+9,No posee,36654363,Luis Fernando Molina Rangel,Mucuchies,M,29/6/2014,Yukasta Susana Rangel Parra,0426 8144007,16664117,Mococon Alto,Madre
+10,No posee,36673772,Jhesser Leonardo Pirela Rangel,Merida,M,1/12/2014,Lorena Carolina Rangel PaRamirez,0412 7696767,17238770,La Rancheria,Madre
+11,No posee,36691696,Andrès Ignacio Prada Parra,Mèrida,M,9/12/2014,Yusmary Lisbeth Parra Quintero,0426 1733342,16657250,Sector San Pedro,Madre
+12,No posee,36703405,Marialis Inmaculada Avendaño Bastidas,Mèrida,F,24/3/2014,Maria Abigail Bastidas,0416 2577188,19071798,Alberto Carnevalli,Madre
+13,No posee,36750939,Mariangel Yerimar Barrios Barrios,Mèrida,F,26/7/2014,Marleny Barrios Barrios,0416 4695813,21121967,Loma de los Limones,Madre
+14,No posee,36785012,Thiago Aaron Morillo Parra,Mèrida,M,18/5/2015,Marielena Parra,0412 9870769,24198284,Sector leticia,Madre
+15,No posee,36800323,Sebastian Alejandro Castillo Camargo,Mèrida,M,3/6/2014,Carmen Teresa Camargo Dávila,0412 6460818,28850810,Mococon Alto,Madre
+16,No posee,36809432,Juan Diego Castillo Castillo,Mucuchies,M,2/1/2015,Paola Dayana Castillo Jauregui,0412 5086093,22655351,Mococon Alto,Madre
+17,No posee,36814435,Thomàs de Jesùs Parra Aldana,Mèrida,M,13/8/2014,Yelitza Coromoto Aldana Parra,0412 6189706,25643430,San Pedro,Madre
+18,No posee,36838572,Yhosue Alejandro Fernàndez Quintero,Mèrida,M,5/11/2014,Yusmely Alexandra Quintero,0412 0782107,20851558,La Bomba,Madre
