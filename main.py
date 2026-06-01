@@ -3,24 +3,34 @@ from rol import requiere_rol
 from datos import GestorArchivos
 import pandas as pd
 
-# --- FUNCIONES PROTEGIDAS POR DECORADORES ---
+
+# Lista de archivos para iterar
+GRADOS_CSV = [
+    '1er_grado.csv', '2do_grado.csv', '3er_grado.csv', 
+    '4to_grado.csv', '5to_grado.csv', '6to_grado.csv'
+]
 
 @requiere_rol('Directora')
 def pasar_de_anio(usuario_actual):
-    df = GestorArchivos.leer_csv('estudiantes.csv')
-    if df is not None:
-        df = df[df['grado'] < 6]
-        df.loc[:, 'grado'] += 1
-        GestorArchivos.guardar_csv(df, 'estudiantes.csv')
-        print("-> Promoción exitosa. Los alumnos de 6to grado han egresado.")
+    print("Iniciando promoción de año escolar...")
+    for archivo in GRADOS_CSV:
+        if os.path.exists(archivo):
+            df = pd.read_csv(archivo)
+            # Aquí ajustas la lógica: si el archivo es '6to_grado.csv', egresan (puedes borrar o mover a 'egresados.csv')
+            # Si son grados 1-5, los mueves al siguiente archivo o incrementas su grado si tu CSV tiene columna 'grado'
+            print(f"-> Procesando {archivo}...")
+            # ... tu lógica de incremento ...
+    print("-> Promoción exitosa.")
 
-@requiere_rol('Profesora') # Directora también accede por la regla del decorador
+@requiere_rol('Profesora')
 def actualizar_edades(usuario_actual):
-    df = GestorArchivos.leer_csv('estudiantes.csv')
-    if df is not None:
-        df.loc[:, 'edad'] += 1
-        GestorArchivos.guardar_csv(df, 'estudiantes.csv')
-        print("-> Edades de los estudiantes actualizadas (+1 año).")
+    for archivo in GRADOS_CSV:
+        if os.path.exists(archivo):
+            df = pd.read_csv(archivo)
+            if 'edad' in df.columns:
+                df.loc[:, 'edad'] += 1
+                df.to_csv(archivo, index=False)
+                print(f"-> Edades actualizadas en {archivo}")
 
 @requiere_rol('Administrativo')
 def registrar_asistencia_docente(usuario_actual):

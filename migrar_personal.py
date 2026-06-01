@@ -3,9 +3,6 @@ import pandas as pd
 def migrar_pdf_admin_a_personal():
     print("=== MIGRANDO PERSONAL DESDE PDF/TEXTO EXTRAÍDO ===")
     
-    # Hemos pre-cargado los datos exactos del PDF que proporcionaste
-    # para garantizar una extracción 100% precisa sin depender del formato del Excel
-    
     datos_personal = [
         {"id": "17238770", "nombre": "Lorena Carolina Rangel Ramirez", "rol": "Directora", "contrasena": "1234"},
         {"id": "17129781", "nombre": "Lin Marbely Uzcategui Briceno", "rol": "Administrativo", "contrasena": "1234"},

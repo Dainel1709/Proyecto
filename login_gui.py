@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from tkinter import ttk
 import pandas as pd
 import os
 
@@ -149,6 +150,19 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.pantalla_datos.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
         self.pantalla_datos.insert("0.0", ">>> Sistema listo.\n>>> Base de datos conectada.")
         self.pantalla_datos.configure(state="disabled")
+        self.df_actual = None 
+
+        # Creamos la tabla (Treeview) una sola vez
+        columnas = ('Numero de lista','Cédula Escolar','Cédula Identidad', 'Estudiante', 'Genero', 'Fecha de nacimiento')
+        self.tabla = ttk.Treeview(self.contenido_frame, columns=columnas, show='headings')
+        for col in columnas:
+            self.tabla.heading(col, text=col)
+            self.tabla.column(col, width=150)
+        self.tabla.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+        # Botón Ver Representante
+        self.btn_detalle = ctk.CTkButton(self.contenido_frame, text="Ver Representante", command=self.mostrar_detalle_representante)
+        self.btn_detalle.grid(row=4, column=0, pady=10)
 
     # --- CAMBIOS DE VISTA DE CONTENIDO ---
     def vista_ver_matricula(self):
@@ -182,29 +196,55 @@ class FrameMenuPrincipal(ctk.CTkFrame):
 
     # --- LÓGICA DE LECTURA DE ARCHIVOS POR SEPARADO ---
     def cargar_estudiantes_por_grado(self, grado_seleccionado):
-        # Convertimos el nombre del combo a un formato de archivo claro
-        # Ejemplo: "Matrivula 4to Grado" -> "4to_grado.csv"
         nombre_archivo = f"{grado_seleccionado.lower().replace(' ', '_')}.csv"
-        
-        self.pantalla_datos.configure(state="normal")
-        self.pantalla_datos.delete("0.0", "end")
-        
+    
+        # 1. Limpiar tabla actual
+        for item in self.tabla.get_children():
+            self.tabla.delete(item)
+    
+        # 2. Cargar datos
         if os.path.exists(nombre_archivo):
             try:
-                df = pd.read_csv(nombre_archivo)
-                texto_tabla = df.to_string(index=False)
-                self.pantalla_datos.insert("0.0", f"=== MATRÍCULA OFICIAL - {grado_seleccionado.upper()} ===\nArchivo: {nombre_archivo}\n\n{texto_tabla}")
+                self.df_actual = pd.read_csv(nombre_archivo)
+                # Solo iteramos sobre las filas del DataFrame
+                for _, row in self.df_actual.iterrows():
+                    self.tabla.insert("", "end", values=(
+                        row['Número de lista'], 
+                        row['Cédula Escolar'],
+                        row['Cédula Identidad'],
+                        row['Estudiante'], 
+                        row['Genero'], 
+                        row['Fecha de nacimiento']
+                    ))
             except Exception as e:
-                self.pantalla_datos.insert("0.0", f"Error al intentar abrir el archivo {nombre_archivo}: {e}")
+                messagebox.showerror("Error", f"No se pudo leer el archivo: {e}")
         else:
-            self.pantalla_datos.insert(
-                "0.0", 
-                f">>> ARCHIVO NO ENCONTRADO: '{nombre_archivo}'\n\n"
-                f"Para solucionar esto, asegúrate de que tu script de migración guarde el listado "
-                f"de este grado con el nombre exacto de: '{nombre_archivo}' en la misma carpeta."
-            )
+            messagebox.showerror("Error", f"Archivo {nombre_archivo} no encontrado.")
+    def mostrar_detalle_representante(self):
+        item_seleccionado = self.tabla.selection()
+        if not item_seleccionado:
+            messagebox.showwarning("Selección", "Por favor, seleccione un estudiante de la tabla.")
+            return
             
-        self.pantalla_datos.configure(state="disabled")
+        valores = self.tabla.item(item_seleccionado)['values']
+        nombre_est = valores[3]
+        
+        # Buscar el registro completo en el DataFrame guardado
+        datos_est = self.df_actual[self.df_actual['Estudiante'] == nombre_est].iloc[0]
+        
+        # Crear ventana emergente (Toplevel)
+        top = ctk.CTkToplevel(self)
+        top.title(f"Representante de {nombre_est}")
+        top.geometry("400x300")
+        
+        info = (f"Representante: {datos_est['Representante']}\n"
+                f"Cédula: {datos_est['Cédula']}\n"
+                f"Contacto: {datos_est['Contacto']}\n"
+                f"Parentesco: {datos_est['Parentesco']}\n"
+                f"Dirección: {datos_est['Dirección']}")
+                
+        ctk.CTkLabel(top, text="Datos del Representante", font=("Arial", 20, "bold")).pack(pady=10)
+        ctk.CTkLabel(top, text=info, justify="left").pack(pady=10, padx=20)
 
 
 # ==========================================
@@ -215,7 +255,7 @@ class AppEscuela(ctk.CTk):
         super().__init__()
 
         self.title("Sistema de Gestión - U.E. Juana Ramírez")
-        self.geometry("1250x650")
+        self.geometry("1100x650")
         self.resizable(True, True)
 
         # Arrancar maximizado directamente
