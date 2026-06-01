@@ -42,35 +42,58 @@ class FrameLogin(ctk.CTkFrame):
         self.label_footer = ctk.CTkLabel(master=self.card, text="Mérida, Venezuela", font=("Helvetica", 11), text_color="gray")
         self.label_footer.pack(side="bottom", pady=20)
 
-    def validar_ingreso(self):
-        cedula = self.input_cedula.get().strip()
-        clave = self.input_clave.get().strip()
+        # =========================================================================
+        # LÓGICA DE NAVEGACIÓN ENTRE CAMPOS (ACTUALIZADA)
+        # =========================================================================
+        
+        # En la cédula: Enter o Flecha Abajo pasan el foco a la contraseña
+        self.input_cedula.bind("<Return>", self.pasar_a_contrasena)
+        self.input_cedula.bind("<Down>", self.pasar_a_contrasena)
 
-        if not cedula or not clave:
-            messagebox.showwarning("Campos Vacíos", "Por favor, introduce tu cédula y contraseña.")
-            return
+        # En la contraseña: Enter ingresa, Flecha Arriba regresa a la cédula
+        self.input_clave.bind("<Return>", self.validar_ingreso)
+        self.input_clave.bind("<Up>", self.regresar_a_cedula)  # <--- AGREGADO
+        
+        # Coloca el cursor automáticamente en la cédula al abrir la pantalla
+        self.input_cedula.focus()
 
-        if not os.path.exists('personal.csv'):
-            messagebox.showerror("Error del Sistema", "No se encontró el archivo 'personal.csv'.")
-            return
+    # Función auxiliar para ir hacia abajo
+    def pasar_a_contrasena(self, event=None):
+        self.input_clave.focus()
 
-        try:
-            df_personal = pd.read_csv('personal.csv')
-            df_personal['id'] = df_personal['id'].astype(str)
-            usuario = df_personal[df_personal['id'] == cedula]
+    # Función auxiliar para ir hacia arriba
+    def regresar_a_cedula(self, event=None):  # <--- AGREGADO
+        self.input_cedula.focus()
 
-            if not usuario.empty:
-                clave_correcta = str(usuario.iloc[0]['contrasena']).strip()
-                nombre_usuario = usuario.iloc[0]['nombre']
-                rol_usuario = usuario.iloc[0]['rol']
+    def validar_ingreso(self, event=None): 
+        cedula = self.input_cedula.get().strip() 
+        clave = self.input_clave.get().strip() 
 
-                if clave == clave_correcta:
-                    self.callback_login_exitoso(nombre_usuario, rol_usuario)
-                else:
-                    messagebox.showerror("Error de Acceso", "La contraseña es incorrecta.")
-            else:
-                messagebox.showerror("Error de Acceso", "Cédula no registrada.")
-        except Exception as e:
+        if not cedula or not clave: 
+            messagebox.showwarning("Campos Vacíos", "Por favor, introduce tu cédula y contraseña.") 
+            return 
+
+        if not os.path.exists('personal.csv'): 
+            messagebox.showerror("Error del Sistema", "No se encontró el archivo 'personal.csv'.") 
+            return 
+
+        try: 
+            df_personal = pd.read_csv('personal.csv') 
+            df_personal['id'] = df_personal['id'].astype(str) 
+            usuario = df_personal[df_personal['id'] == cedula] 
+
+            if not usuario.empty: 
+                clave_correcta = str(usuario.iloc[0]['contrasena']).strip() 
+                nombre_usuario = usuario.iloc[0]['nombre'] 
+                rol_usuario = usuario.iloc[0]['rol'] 
+
+                if clave == clave_correcta: 
+                    self.callback_login_exitoso(nombre_usuario, rol_usuario) 
+                else: 
+                    messagebox.showerror("Error de Acceso", "La contraseña es incorrecta.") 
+            else: 
+                messagebox.showerror("Error de Acceso", "Cédula no registrada.") 
+        except Exception as e: 
             messagebox.showerror("Error", f"No se pudo leer la base de datos: {e}")
 
 

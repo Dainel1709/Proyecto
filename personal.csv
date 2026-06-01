@@ -1,4 +1,5 @@
 id,nombre,rol,contrasena
+1,Ricardo,Admin,1
 17238770,Lorena Carolina Rangel Ramirez,Directora,1234
 17129781,Lin Marbely Uzcategui Briceno,Administrativo,1234
 15031556,Yenith Del Carmen Davila Briceno,Administrativo,1234
@@ -12,4 +13,4 @@ id,nombre,rol,contrasena
 27780603,Genesis Del Valle Albarran Villarreal,Profesora,1234
 24229244,Stefany Yurinay Balza Trejo,Profesora,1234
 11951936,Flavio Guzman Briceno Segovia,Profesora,1234
-11953316,Yuraima Del Carmen Pena De Quintero,Administrativo,1234
+11953316,Yuraima Del Carmen Peña De Quintero,Administrativo,1234
