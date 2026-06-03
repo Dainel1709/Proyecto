@@ -141,24 +141,20 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.btn_salir = ctk.CTkButton(self.sidebar_frame, text="Cerrar Sesión", fg_color="#912a2a", hover_color="#701e1e", command=self.callback_cerrar_sesion, height=35)
         self.btn_salir.grid(row=6, column=0, padx=20, pady=20, sticky="ew")
 
-        # --- ÁREA DE CONTENIDO (DERECHA) ---
+        # Saludo de la Parte Superior 
         self.contenido_frame = ctk.CTkFrame(self, fg_color="transparent") 
         self.contenido_frame.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
         self.contenido_frame.grid_columnconfigure(0, weight=1)
         self.contenido_frame.grid_rowconfigure(3, weight=1)
-
         self.lbl_bienvenida = ctk.CTkLabel(self.contenido_frame, text=f"¡Hola, {self.nombre.split()[0]}! Bienvenido al Sistema Académico.", font=("Helvetica", 22, "bold"), anchor="w")
         self.lbl_bienvenida.grid(row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w")
-
         self.lbl_info_seccion = ctk.CTkLabel(self.contenido_frame, text="Selecciona una opción del menú de la izquierda para comenzar.", font=("Helvetica", 13), text_color="gray", anchor="w")
         self.lbl_info_seccion.grid(row=1, column=0, columnspan=2, padx=10, pady=(0, 15), sticky="w")
 
-        # --- NUEVO CONTENEDOR DE FILTROS POR GRADO ---
+        # Filtro de Grados (Inicialmente Oculto)
         self.frame_grados = ctk.CTkFrame(self.contenido_frame, fg_color="transparent")
-        
         self.lbl_selector = ctk.CTkLabel(self.frame_grados, text="Seleccione el Grado a Consultar:", font=("Helvetica", 13, "bold"))
         self.lbl_selector.pack(side="left", padx=(10, 15))
-        
         self.combo_grado = ctk.CTkOptionMenu(
             self.frame_grados, 
             values=["1er Grado", "2do Grado", "3er Grado", "4to Grado", "5to Grado", "6to Grado"],
@@ -169,7 +165,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
 
         # PANTALLA DE TEXTO PRINCIPAL
         self.pantalla_datos = ctk.CTkTextbox(self.contenido_frame, font=("Courier New", 12), corner_radius=10)
-        self.pantballa_datos_posicion = self.pantalla_datos.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        self.pantalla_datos_posicion = self.pantalla_datos.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
         self.pantalla_datos.insert("0.0", ">>> Sistema listo.\n>>> Base de datos conectada.")
         self.pantalla_datos.configure(state="disabled")
         self.df_actual = None 
@@ -189,11 +185,9 @@ class FrameMenuPrincipal(ctk.CTkFrame):
     # Funcion Menu Desplegable Estudiantes
     def toggle_menu_estudiantes(self):
         if not self.menu_estudiantes_abierto:
-            # Si está cerrado, mostramos los botones uno debajo del otro
             self.btn_ver_matricula.grid(row=3, column=0, padx=20, pady=5, sticky="ew")
             self.btn_notas.grid(row=4, column=0, padx=20, pady=5, sticky="ew")
             
-            # El botón de administrador solo se muestra si tiene el rol permitido
             if self.rol in ["Directora", "Administrativo"]:
                 self.btn_admin.grid(row=5, column=0, padx=20, pady=5, sticky="ew")
             
@@ -208,26 +202,26 @@ class FrameMenuPrincipal(ctk.CTkFrame):
             self.btn_estudiantes.configure(text="Estudiantes ▼")
             self.menu_estudiantes_abierto = False
 
-    # --- CAMBIOS DE VISTA DE CONTENIDO ---
+   # Vista del Contenido por Sección
     def vista_ver_matricula(self):
         self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
         self.lbl_info_seccion.configure(text="Visualizando las listas oficiales desglosadas por grados.")
         self.cargar_estudiantes_por_grado(self.combo_grado.get())
 
     def vista_notas(self):
-        self.frame_grados.grid_forget()
+        self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
         self.lbl_info_seccion.configure(text="Módulo para el registro de calificaciones y asistencias por lapsos.")
         self.pantalla_datos.configure(state="normal")
         self.pantalla_datos.delete("0.0", "end")
-        self.pantalla_datos.insert("0.0", f"=== CARGA DE NOTAS Y EVALUACIÓN ===\n\nDocente: {self.nombre}\nEstatus: Sección en desarrollo institucional...")
+        self.pantalla_datos.insert("0.0", f"=== CARGA DE NOTAS Y EVALUACIÓN ===\n\nDocente: {self.nombre}\nGrado Consultando: {self.combo_grado.get()}\n\nEstatus: Sección en desarrollo institucional...")
         self.pantalla_datos.configure(state="disabled")
 
     def vista_administrar(self):
-        self.frame_grados.grid_forget()
+        self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
         self.lbl_info_seccion.configure(text="Sección restringida para la modificación, ingresos o retiros de la matrícula.")
         self.pantalla_datos.configure(state="normal")
         self.pantalla_datos.delete("0.0", "end")
-        self.pantalla_datos.insert("0.0", f"=== CONFIGURACIÓN DE MATRÍCULA (NIVEL: {self.rol.upper()}) ===\n\nPermisos validados. Aquí se habilitarán los formularios gráficos para añadir o remover estudiantes.")
+        self.pantalla_datos.insert("0.0", f"=== CONFIGURACIÓN DE MATRÍCULA (NIVEL: {self.rol.upper()}) ===\n\nPermisos validados para {self.combo_grado.get()}.\n\nAquí se habilitarán los formularios gráficos para añadir o remover estudiantes.")
         self.pantalla_datos.configure(state="disabled")
 
     # --- LÓGICA DE LECTURA DE ARCHIVOS POR SEPARADO ---
