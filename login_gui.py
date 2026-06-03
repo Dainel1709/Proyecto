@@ -367,24 +367,19 @@ class FrameMenuPrincipal(ctk.CTkFrame):
 
         # Inputs Alumno
         ctk.CTkLabel(tab_alumno, text="Nombres del Estudiante:").pack(anchor="w", padx=10, pady=2)
-        entry_nom_est = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
-        entry_nom_est = tab_alumno.winfo_children()[-1]
+        entry_nom_est = ctk.CTkEntry(tab_alumno, width=400); entry_nom_est.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_alumno, text="Apellidos del Estudiante:").pack(anchor="w", padx=10, pady=2)
-        entry_ape_est = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
-        entry_ape_est = tab_alumno.winfo_children()[-1]
+        entry_ape_est = ctk.CTkEntry(tab_alumno, width=400); entry_ape_est.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_alumno, text="Cédula Escolar (Opcional):").pack(anchor="w", padx=10, pady=2)
-        entry_ced_esc = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
-        entry_ced_esc = tab_alumno.winfo_children()[-1]
+        entry_ced_esc = ctk.CTkEntry(tab_alumno, width=400); entry_ced_esc.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_alumno, text="Cédula Identidad (Opcional):").pack(anchor="w", padx=10, pady=2)
-        entry_ced_id = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
-        entry_ced_id = tab_alumno.winfo_children()[-1]
+        entry_ced_id = ctk.CTkEntry(tab_alumno, width=400); entry_ced_id.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_alumno, text="Lugar de Nacimiento:").pack(anchor="w", padx=10, pady=2)
-        entry_lugar = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
-        entry_lugar = tab_alumno.winfo_children()[-1]
+        entry_lugar = ctk.CTkEntry(tab_alumno, width=400); entry_lugar.pack(padx=10, pady=2)
 
         frame_fecha = ctk.CTkFrame(tab_alumno, fg_color="transparent")
         frame_fecha.pack(fill="x", padx=10, pady=5)
@@ -396,37 +391,30 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         entry_anio = ctk.CTkEntry(frame_fecha, width=60); entry_anio.grid(row=0, column=5, padx=5)
 
         ctk.CTkLabel(tab_alumno, text="Género (M/F):").pack(anchor="w", padx=10, pady=2)
-        entry_genero = ctk.CTkEntry(tab_alumno, width=80).pack(anchor="w", padx=10, pady=2)
-        entry_genero = tab_alumno.winfo_children()[-1]
+        entry_genero = ctk.CTkEntry(tab_alumno, width=80); entry_genero.pack(anchor="w", padx=10, pady=2)
 
         # Inputs Representante
         ctk.CTkLabel(tab_repr, text="Nombres del Representante:").pack(anchor="w", padx=10, pady=2)
-        entry_nom_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
-        entry_nom_rep = tab_repr.winfo_children()[-1]
+        entry_nom_rep = ctk.CTkEntry(tab_repr, width=400); entry_nom_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Apellidos del Representante:").pack(anchor="w", padx=10, pady=2)
-        entry_ape_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
-        entry_ape_rep = tab_repr.winfo_children()[-1]
+        entry_ape_rep = ctk.CTkEntry(tab_repr, width=400); entry_ape_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Cédula de Identidad:").pack(anchor="w", padx=10, pady=2)
-        entry_ced_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
-        entry_ced_rep = tab_repr.winfo_children()[-1]
+        entry_ced_rep = ctk.CTkEntry(tab_repr, width=400); entry_ced_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Contacto Telefónico:").pack(anchor="w", padx=10, pady=2)
-        entry_tlf_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
-        entry_tlf_rep = tab_repr.winfo_children()[-1]
+        entry_tlf_rep = ctk.CTkEntry(tab_repr, width=400); entry_tlf_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Parentesco:").pack(anchor="w", padx=10, pady=2)
-        entry_par_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
-        entry_par_rep = tab_repr.winfo_children()[-1]
+        entry_par_rep = ctk.CTkEntry(tab_repr, width=400); entry_par_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Dirección Completa:").pack(anchor="w", padx=10, pady=2)
-        entry_dir_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
-        entry_dir_rep = tab_repr.winfo_children()[-1]
+        entry_dir_rep = ctk.CTkEntry(tab_repr, width=400); entry_dir_rep.pack(padx=10, pady=2)
 
         def guardar_nuevo_alumno():
             if not entry_nom_est.get().strip() or not entry_ape_est.get().strip():
-                messagebox.showwarning("Campos Requeridos", "El nombre y apellido del estudiante son campos obligatorios.")
+                messagebox.showwarning("Campos Requeridos", "El nombre y apellido del estudiante son obligatorios.", parent=top)
                 return
                 
             dic_est = {
@@ -451,18 +439,22 @@ class FrameMenuPrincipal(ctk.CTkFrame):
             
             exito, msg = migrar_excel.agregar_estudiante_en_csv(grado_actual, dic_est, dic_rep)
             if exito:
-                messagebox.showinfo("Éxito", "Estudiante anexado a la base de datos CSV de forma correcta.")
+                # Modificado: parent=top asegura que salga al frente
+                messagebox.showinfo("Éxito", "Estudiante anexado a la base de datos CSV de forma correcta.", parent=top)
                 self.cargar_estudiantes_por_grado(grado_actual)
                 
                 if self.rol in ["Directora", "Administrativo"]:
-                    sinc_excel = messagebox.askyesno("Sincronizar", "¿Desea inyectar este nuevo alumno directo al Excel oficial (.xlsx) de este grado?")
+                    # Modificado: parent=top
+                    sinc_excel = messagebox.askyesno("Sincronizar", "¿Desea inyectar este nuevo alumno directo al Excel oficial (.xlsx) de este grado?", parent=top)
                     if sinc_excel:
                         ok_ex, msg_ex = migrar_excel.actualizar_excel_desde_csv(grado_actual)
-                        if ok_ex: messagebox.showinfo("Excel Sincronizado", msg_ex)
-                        else: messagebox.showerror("Error Excel", msg_ex)
+                        if ok_ex: 
+                            messagebox.showinfo("Excel Sincronizado", msg_ex, parent=top)
+                        else: 
+                            messagebox.showerror("Error Excel", msg_ex, parent=top)
                 top.destroy()
             else:
-                messagebox.showerror("Error", msg)
+                messagebox.showerror("Error", msg, parent=top)
 
         btn_crear = ctk.CTkButton(top, text="➕ Agregar Alumno Oficial", fg_color="#1a6332", command=guardar_nuevo_alumno)
         btn_crear.pack(pady=15)
@@ -491,19 +483,13 @@ class FrameMenuPrincipal(ctk.CTkFrame):
 
         # Inputs Edición Alumno
         ctk.CTkLabel(tab_alumno, text="Nombres del Estudiante:").pack(anchor="w", padx=10, pady=2)
-        entry_nom_est = ctk.CTkEntry(tab_alumno, width=400)
-        entry_nom_est.insert(0, datos_est.get('Nombres_Est', ''))
-        entry_nom_est.pack(padx=10, pady=2)
+        entry_nom_est = ctk.CTkEntry(tab_alumno, width=400); entry_nom_est.insert(0, datos_est.get('Nombres_Est', '')); entry_nom_est.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_alumno, text="Apellidos del Estudiante:").pack(anchor="w", padx=10, pady=2)
-        entry_ape_est = ctk.CTkEntry(tab_alumno, width=400)
-        entry_ape_est.insert(0, datos_est.get('Apellidos_Est', ''))
-        entry_ape_est.pack(padx=10, pady=2)
+        entry_ape_est = ctk.CTkEntry(tab_alumno, width=400); entry_ape_est.insert(0, datos_est.get('Apellidos_Est', '')); entry_ape_est.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_alumno, text="Lugar de Nacimiento:").pack(anchor="w", padx=10, pady=2)
-        entry_lugar = ctk.CTkEntry(tab_alumno, width=400)
-        entry_lugar.insert(0, datos_est.get('Lugar de Nacimiento', ''))
-        entry_lugar.pack(padx=10, pady=2)
+        entry_lugar = ctk.CTkEntry(tab_alumno, width=400); entry_lugar.insert(0, datos_est.get('Lugar de Nacimiento', '')); entry_lugar.pack(padx=10, pady=2)
 
         frame_fecha = ctk.CTkFrame(tab_alumno, fg_color="transparent")
         frame_fecha.pack(fill="x", padx=10, pady=5)
@@ -515,40 +501,26 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         entry_anio = ctk.CTkEntry(frame_fecha, width=60); entry_anio.insert(0, datos_est.get('Anio_Nac', '')); entry_anio.grid(row=0, column=5, padx=5)
 
         ctk.CTkLabel(tab_alumno, text="Género (M/F):").pack(anchor="w", padx=10, pady=2)
-        entry_genero = ctk.CTkEntry(tab_alumno, width=80)
-        entry_genero.insert(0, datos_est.get('Genero', ''))
-        entry_genero.pack(anchor="w", padx=10, pady=2)
+        entry_genero = ctk.CTkEntry(tab_alumno, width=80); entry_genero.insert(0, datos_est.get('Genero', '')); entry_genero.pack(anchor="w", padx=10, pady=2)
 
         # Inputs Edición Representante
         ctk.CTkLabel(tab_repr, text="Nombres del Representante:").pack(anchor="w", padx=10, pady=2)
-        entry_nom_rep = ctk.CTkEntry(tab_repr, width=400)
-        entry_nom_rep.insert(0, datos_est.get('Repr_Nombre', ''))
-        entry_nom_rep.pack(padx=10, pady=2)
+        entry_nom_rep = ctk.CTkEntry(tab_repr, width=400); entry_nom_rep.insert(0, datos_est.get('Repr_Nombre', '')); entry_nom_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Apellidos del Representante:").pack(anchor="w", padx=10, pady=2)
-        entry_ape_rep = ctk.CTkEntry(tab_repr, width=400)
-        entry_ape_rep.insert(0, datos_est.get('Repr_Apellido', ''))
-        entry_ape_rep.pack(padx=10, pady=2)
+        entry_ape_rep = ctk.CTkEntry(tab_repr, width=400); entry_ape_rep.insert(0, datos_est.get('Repr_Apellido', '')); entry_ape_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Cédula de Identidad:").pack(anchor="w", padx=10, pady=2)
-        entry_ced_rep = ctk.CTkEntry(tab_repr, width=400)
-        entry_ced_rep.insert(0, datos_est.get('Cédula', ''))
-        entry_ced_rep.pack(padx=10, pady=2)
+        entry_ced_rep = ctk.CTkEntry(tab_repr, width=400); entry_ced_rep.insert(0, datos_est.get('Cédula', '')); entry_ced_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Contacto Telefónico:").pack(anchor="w", padx=10, pady=2)
-        entry_tlf_rep = ctk.CTkEntry(tab_repr, width=400)
-        entry_tlf_rep.insert(0, datos_est.get('Contacto', ''))
-        entry_tlf_rep.pack(padx=10, pady=2)
+        entry_tlf_rep = ctk.CTkEntry(tab_repr, width=400); entry_tlf_rep.insert(0, datos_est.get('Contacto', '')); entry_tlf_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Parentesco:").pack(anchor="w", padx=10, pady=2)
-        entry_par_rep = ctk.CTkEntry(tab_repr, width=400)
-        entry_par_rep.insert(0, datos_est.get('Parentesco', ''))
-        entry_par_rep.pack(padx=10, pady=2)
+        entry_par_rep = ctk.CTkEntry(tab_repr, width=400); entry_par_rep.insert(0, datos_est.get('Parentesco', '')); entry_par_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Dirección Completa:").pack(anchor="w", padx=10, pady=2)
-        entry_dir_rep = ctk.CTkEntry(tab_repr, width=400)
-        entry_dir_rep.insert(0, datos_est.get('Dirección', ''))
-        entry_dir_rep.pack(padx=10, pady=2)
+        entry_dir_rep = ctk.CTkEntry(tab_repr, width=400); entry_dir_rep.insert(0, datos_est.get('Dirección', '')); entry_dir_rep.pack(padx=10, pady=2)
 
         def guardar_cambios_locales():
             dic_est = {
@@ -571,18 +543,22 @@ class FrameMenuPrincipal(ctk.CTkFrame):
             
             exito, msg = migrar_excel.modificar_datos_en_csv(grado_actual, cedula_llave, dic_est, dic_rep)
             if exito:
-                messagebox.showinfo("Éxito", "Los cambios han sido aplicados al archivo CSV.")
+                # Modificado: parent=top
+                messagebox.showinfo("Éxito", "Los cambios han sido aplicados al archivo CSV.", parent=top)
                 self.cargar_estudiantes_por_grado(grado_actual)
                 
                 if self.rol in ["Directora", "Administrativo"]:
-                    sinc_excel = messagebox.askyesno("Sincronizar", "¿Desea actualizar y exportar estos cambios directamente al Excel oficial (.xlsx) de este grado?")
+                    # Modificado: parent=top
+                    sinc_excel = messagebox.askyesno("Sincronizar", "¿Desea actualizar y exportar estos cambios directamente al Excel oficial (.xlsx) de este grado?", parent=top)
                     if sinc_excel:
                         ok_ex, msg_ex = migrar_excel.actualizar_excel_desde_csv(grado_actual)
-                        if ok_ex: messagebox.showinfo("Excel Sincronizado", msg_ex)
-                        else: messagebox.showerror("Error Excel", msg_ex)
+                        if ok_ex: 
+                            messagebox.showinfo("Excel Sincronizado", msg_ex, parent=top)
+                        else: 
+                            messagebox.showerror("Error Excel", msg_ex, parent=top)
                 top.destroy()
             else:
-                messagebox.showerror("Error", msg)
+                messagebox.showerror("Error", msg, parent=top)
 
         btn_guardar_cambios = ctk.CTkButton(top, text="💾 Guardar Cambios e Inyectar Datos", fg_color="#1f538d", command=guardar_cambios_locales)
         btn_guardar_cambios.pack(pady=15)
