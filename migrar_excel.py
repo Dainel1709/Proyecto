@@ -162,7 +162,7 @@ def modificar_datos_en_csv(grado_texto, cedula_alumno, datos_estudiante=None, da
 
 # --- FUNCIÓN 3: SINCRONIZAR CSV HACIA EXCEL ---
 def actualizar_excel_desde_csv(grado_texto):
-    """ toma los datos del CSV modificado y reescribe de vuelta el Excel oficial manteniendo su formato básico """
+    """ Toma los datos del CSV modificado y reescribe de vuelta el Excel oficial manteniendo su formato básico """
     num_grado = convertir_nombre_grado_a_numero(grado_texto)
     if not num_grado: return False, "Grado no válido."
     
@@ -198,8 +198,8 @@ def actualizar_excel_desde_csv(grado_texto):
                     ws.cell(row=row_idx, column=COL_ANIO_NACIMIENTO + 1, value=alumno_datos.get('Anio_Nac', ''))
                     ws.cell(row=row_idx, column=COL_GERNERO + 1, value=alumno_datos.get('Genero', ''))
                     
-                    # Reescribir celdas del Representante
-                    ws.cell(row=row_idx, column=COL_REPR_APELLID + 1, value=alumno_datos.get('Repr_Apellido', ''))
+                    
+                    ws.cell(row=row_idx, column=COL_REPR_APELLIDO + 1, value=alumno_datos.get('Repr_Apellido', ''))
                     ws.cell(row=row_idx, column=COL_REPR_NOMBRE + 1, value=alumno_datos.get('Repr_Nombre', ''))
                     ws.cell(row=row_idx, column=COL_REPR_CEDULA_IDENTIDAD + 1, value=alumno_datos.get('Cédula', ''))
                     ws.cell(row=row_idx, column=COL_REPR_CONTACTO + 1, value=alumno_datos.get('Contacto', ''))
