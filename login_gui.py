@@ -107,22 +107,18 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.rol = rol_usuario
         self.callback_cerrar_sesion = callback_cerrar_sesion
 
-        # Configurar columnas para pantalla completa
+        # Configuracion de la Barra Lateral
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
-
-        # --- BARRA LATERAL (SIDEBAR) ---
         self.sidebar_frame = ctk.CTkFrame(self, width=240, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(5, weight=1) 
-
+        self.sidebar_frame.grid_rowconfigure(10, weight=1) 
+        # Institucion, Nombre y Rol del Usuario
         self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="U.E. Juana Ramírez", font=("Helvetica", 18, "bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(30, 10))
-
         self.user_frame = ctk.CTkFrame(self.sidebar_frame, fg_color="transparent")
-        self.user_frame.grid(row=1, column=0, padx=10, pady=(0, 30))
-        
-        self.lbl_user_name = ctk.CTkLabel(self.user_frame, text=self.nombre, font=("Helvetica", 13, "bold"))
+        self.user_frame.grid(row=1, column=0, padx=10, pady=(0, 30))   
+        self.lbl_user_name = ctk.CTkLabel(self.user_frame, text=self.nombre, font=("Helvetica", 13, "bold"),wraplength=180, justify="center")
         self.lbl_user_name.pack()
         self.lbl_user_role = ctk.CTkLabel(self.user_frame, text=f"Rol: {self.rol}", font=("Helvetica", 11), text_color="#1f538d")
         self.lbl_user_role.pack()
@@ -142,7 +138,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.btn_salir.grid(row=6, column=0, padx=20, pady=20, sticky="ew")
 
         # --- ÁREA DE CONTENIDO (DERECHA) ---
-        self.contenido_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.contenido_frame = ctk.CTkFrame(self, fg_color="transparent") 
         self.contenido_frame.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
         self.contenido_frame.grid_columnconfigure(0, weight=1)
         self.contenido_frame.grid_rowconfigure(3, weight=1) # El cuadro de datos (fila 3) se estira al maximizar
