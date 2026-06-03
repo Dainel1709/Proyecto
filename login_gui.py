@@ -106,34 +106,38 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.nombre = nombre_usuario
         self.rol = rol_usuario
         self.callback_cerrar_sesion = callback_cerrar_sesion
+        
+        # Primero definimos la variable de control del menú
+        self.menu_estudiantes_abierto = False
 
-        # Configuracion de la Barra Lateral
+        # --- CONFIGURACIÓN DE LA BARRA LATERAL ---
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.sidebar_frame = ctk.CTkFrame(self, width=240, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(10, weight=1) 
-        # Institucion, Nombre y Rol del Usuario
+        
+        # Institución, Nombre y Rol del Usuario
         self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="U.E. Juana Ramírez", font=("Helvetica", 18, "bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(30, 10))
         self.user_frame = ctk.CTkFrame(self.sidebar_frame, fg_color="transparent")
         self.user_frame.grid(row=1, column=0, padx=10, pady=(0, 30))   
-        self.lbl_user_name = ctk.CTkLabel(self.user_frame, text=self.nombre, font=("Helvetica", 13, "bold"),wraplength=180, justify="center")
+        self.lbl_user_name = ctk.CTkLabel(self.user_frame, text=self.nombre, font=("Helvetica", 13, "bold"), wraplength=180, justify="center")
         self.lbl_user_name.pack()
         self.lbl_user_role = ctk.CTkLabel(self.user_frame, text=f"Rol: {self.rol}", font=("Helvetica", 11), text_color="#1f538d")
         self.lbl_user_role.pack()
 
-        # Botones de navegación lateral
-        self.btn_ver_matricula = ctk.CTkButton(self.sidebar_frame, text="Ver Matrícula Escolar", command=self.vista_ver_matricula, height=35)
-        self.btn_ver_matricula.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
-
-        self.btn_notas = ctk.CTkButton(self.sidebar_frame, text="Cargar Notas / Asistencia", command=self.vista_notas, height=35)
-        self.btn_notas.grid(row=3, column=0, padx=20, pady=10, sticky="ew")
-
+        # --- BOTONES DE NAVEGACIÓN LATERAL ---
+        # 1. Botón Principal "Estudiantes"
+        self.btn_estudiantes = ctk.CTkButton(self.sidebar_frame, text="Estudiantes ▼", command=self.toggle_menu_estudiantes, height=35)
+        self.btn_estudiantes.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+        #Botones Secondarios (Inicialmente ocultos)
+        self.btn_ver_matricula = ctk.CTkButton(self.sidebar_frame, text="   Ver Matrícula Escolar", command=self.vista_ver_matricula, height=35)
+        self.btn_notas = ctk.CTkButton(self.sidebar_frame, text="   Cargar Notas / Asistencia", command=self.vista_notas, height=35)
+        
         if self.rol in ["Directora", "Administrativo"]:
-            self.btn_admin = ctk.CTkButton(self.sidebar_frame, text="Modificar Alumnos (Admin)", fg_color="#2b719e", command=self.vista_administrar, height=35)
-            self.btn_admin.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
-
+            self.btn_admin = ctk.CTkButton(self.sidebar_frame, text="   Modificar Alumnos (Admin)", fg_color="#2b719e", command=self.vista_administrar, height=35)
+            
         self.btn_salir = ctk.CTkButton(self.sidebar_frame, text="Cerrar Sesión", fg_color="#912a2a", hover_color="#701e1e", command=self.callback_cerrar_sesion, height=35)
         self.btn_salir.grid(row=6, column=0, padx=20, pady=20, sticky="ew")
 
@@ -141,7 +145,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.contenido_frame = ctk.CTkFrame(self, fg_color="transparent") 
         self.contenido_frame.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
         self.contenido_frame.grid_columnconfigure(0, weight=1)
-        self.contenido_frame.grid_rowconfigure(3, weight=1) # El cuadro de datos (fila 3) se estira al maximizar
+        self.contenido_frame.grid_rowconfigure(3, weight=1)
 
         self.lbl_bienvenida = ctk.CTkLabel(self.contenido_frame, text=f"¡Hola, {self.nombre.split()[0]}! Bienvenido al Sistema Académico.", font=("Helvetica", 22, "bold"), anchor="w")
         self.lbl_bienvenida.grid(row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w")
@@ -149,9 +153,8 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.lbl_info_seccion = ctk.CTkLabel(self.contenido_frame, text="Selecciona una opción del menú de la izquierda para comenzar.", font=("Helvetica", 13), text_color="gray", anchor="w")
         self.lbl_info_seccion.grid(row=1, column=0, columnspan=2, padx=10, pady=(0, 15), sticky="w")
 
-        # --- NUEVO CONTENEDOR DE FILTROS POR GRADO (Línea horizontal) ---
+        # --- NUEVO CONTENEDOR DE FILTROS POR GRADO ---
         self.frame_grados = ctk.CTkFrame(self.contenido_frame, fg_color="transparent")
-        # Nota: No lo mostramos con .grid() inmediatamente, solo cuando eligen "Ver Matrícula"
         
         self.lbl_selector = ctk.CTkLabel(self.frame_grados, text="Seleccione el Grado a Consultar:", font=("Helvetica", 13, "bold"))
         self.lbl_selector.pack(side="left", padx=(10, 15))
@@ -166,12 +169,12 @@ class FrameMenuPrincipal(ctk.CTkFrame):
 
         # PANTALLA DE TEXTO PRINCIPAL
         self.pantalla_datos = ctk.CTkTextbox(self.contenido_frame, font=("Courier New", 12), corner_radius=10)
-        self.pantalla_datos.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        self.pantballa_datos_posicion = self.pantalla_datos.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
         self.pantalla_datos.insert("0.0", ">>> Sistema listo.\n>>> Base de datos conectada.")
         self.pantalla_datos.configure(state="disabled")
         self.df_actual = None 
 
-        # Creamos la tabla (Treeview) una sola vez
+        # Creamos la tabla (Treeview)
         columnas = ('Numero de lista','Cédula Escolar','Cédula Identidad', 'Estudiante', 'Genero', 'Fecha de nacimiento')
         self.tabla = ttk.Treeview(self.contenido_frame, columns=columnas, show='headings')
         for col in columnas:
@@ -183,20 +186,36 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.btn_detalle = ctk.CTkButton(self.contenido_frame, text="Ver Representante", command=self.mostrar_detalle_representante)
         self.btn_detalle.grid(row=4, column=0, pady=10)
 
+    # Funcion Menu Desplegable Estudiantes
+    def toggle_menu_estudiantes(self):
+        if not self.menu_estudiantes_abierto:
+            # Si está cerrado, mostramos los botones uno debajo del otro
+            self.btn_ver_matricula.grid(row=3, column=0, padx=20, pady=5, sticky="ew")
+            self.btn_notas.grid(row=4, column=0, padx=20, pady=5, sticky="ew")
+            
+            # El botón de administrador solo se muestra si tiene el rol permitido
+            if self.rol in ["Directora", "Administrativo"]:
+                self.btn_admin.grid(row=5, column=0, padx=20, pady=5, sticky="ew")
+            
+            self.btn_estudiantes.configure(text="Estudiantes ▲")
+            self.menu_estudiantes_abierto = True
+        else:
+            self.btn_ver_matricula.grid_forget()
+            self.btn_notas.grid_forget()
+            if hasattr(self, 'btn_admin'):
+                self.btn_admin.grid_forget()
+                
+            self.btn_estudiantes.configure(text="Estudiantes ▼")
+            self.menu_estudiantes_abierto = False
+
     # --- CAMBIOS DE VISTA DE CONTENIDO ---
     def vista_ver_matricula(self):
-        # Hacemos aparecer sutilmente la barra selectora de grados en la fila 2
         self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
-        
         self.lbl_info_seccion.configure(text="Visualizando las listas oficiales desglosadas por grados.")
-        
-        # Cargar por defecto el grado que esté seleccionado actualmente en el combo
         self.cargar_estudiantes_por_grado(self.combo_grado.get())
 
     def vista_notas(self):
-        # Ocultamos el filtro de grados porque aquí no se usa
         self.frame_grados.grid_forget()
-        
         self.lbl_info_seccion.configure(text="Módulo para el registro de calificaciones y asistencias por lapsos.")
         self.pantalla_datos.configure(state="normal")
         self.pantalla_datos.delete("0.0", "end")
@@ -204,9 +223,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.pantalla_datos.configure(state="disabled")
 
     def vista_administrar(self):
-        # Ocultamos el filtro de grados
         self.frame_grados.grid_forget()
-        
         self.lbl_info_seccion.configure(text="Sección restringida para la modificación, ingresos o retiros de la matrícula.")
         self.pantalla_datos.configure(state="normal")
         self.pantalla_datos.delete("0.0", "end")
@@ -217,15 +234,12 @@ class FrameMenuPrincipal(ctk.CTkFrame):
     def cargar_estudiantes_por_grado(self, grado_seleccionado):
         nombre_archivo = f"{grado_seleccionado.lower().replace(' ', '_')}.csv"
     
-        # 1. Limpiar tabla actual
         for item in self.tabla.get_children():
             self.tabla.delete(item)
     
-        # 2. Cargar datos
         if os.path.exists(nombre_archivo):
             try:
                 self.df_actual = pd.read_csv(nombre_archivo)
-                # Solo iteramos sobre las filas del DataFrame
                 for _, row in self.df_actual.iterrows():
                     self.tabla.insert("", "end", values=(
                         row['Número de lista'], 
@@ -239,6 +253,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
                 messagebox.showerror("Error", f"No se pudo leer el archivo: {e}")
         else:
             messagebox.showerror("Error", f"Archivo {nombre_archivo} no encontrado.")
+
     def mostrar_detalle_representante(self):
         item_seleccionado = self.tabla.selection()
         if not item_seleccionado:
@@ -248,10 +263,8 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         valores = self.tabla.item(item_seleccionado)['values']
         nombre_est = valores[3]
         
-        # Buscar el registro completo en el DataFrame guardado
         datos_est = self.df_actual[self.df_actual['Estudiante'] == nombre_est].iloc[0]
         
-        # Crear ventana emergente (Toplevel)
         top = ctk.CTkToplevel(self)
         top.title(f"Representante de {nombre_est}")
         top.geometry("400x300")
