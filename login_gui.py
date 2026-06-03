@@ -273,11 +273,17 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         
         # Extraer datos del DataFrame actual
         datos_est = self.df_actual[self.df_actual['Estudiante'] == nombre_est].iloc[0]
-
+        
+        # --- CÁLCULO DE EDAD EN TIEMPO REAL ---
+        edad_actual = migrar_excel.calcular_edad(
+            datos_est.get('Dia_Nac', 0), 
+            datos_est.get('Mes_Nac', 0), 
+            datos_est.get('Anio_Nac', 0)
+        )
         # Ventana Flotante de Solo Lectura
         top = ctk.CTkToplevel(self)
         top.title(f"Información Institucional - {nombre_est}")
-        top.geometry("500x520")
+        top.geometry("500x540")
         top.resizable(False, False)
         top.focus_get()
 
@@ -293,6 +299,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
             f"• Cédula Identidad / Escolar: {valores[2]} / {valores[1]}\n"
             f"• Género: {datos_est.get('Genero', '')}\n"
             f"• Fecha de Nacimiento: {datos_est.get('Fecha de nacimiento', '')}\n"
+            f"• Edad Actual: {edad_actual} 📅\n"
             f"• Lugar de Nacimiento: {datos_est.get('Lugar de Nacimiento', '')}"
         )
         ctk.CTkLabel(frame_est, text=txt_estudiante, justify="left", font=("Helvetica", 12)).pack(padx=15, pady=10, anchor="w")
