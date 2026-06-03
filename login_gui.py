@@ -178,9 +178,11 @@ class FrameMenuPrincipal(ctk.CTkFrame):
             self.tabla.column(col, width=150)
         self.tabla.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        # Botón Ver Representante
+        # EVENTO DE SELECCIÓN: Detectar clics en las filas de la tabla
+        self.tabla.bind("<<TreeviewSelect>>", self.controlar_visibilidad_boton)
+
+        # Botón Ver Representante (Oculto al inicio, sin el .grid())
         self.btn_detalle = ctk.CTkButton(self.contenido_frame, text="Ver Representante", command=self.mostrar_detalle_representante)
-        self.btn_detalle.grid(row=4, column=0, pady=10)
 
     # Funcion Menu Desplegable Estudiantes
     def toggle_menu_estudiantes(self):
@@ -202,13 +204,22 @@ class FrameMenuPrincipal(ctk.CTkFrame):
             self.btn_estudiantes.configure(text="Estudiantes ▼")
             self.menu_estudiantes_abierto = False
 
-   # Vista del Contenido por Sección
+    def controlar_visibilidad_boton(self, event=None):
+        """Muestra el botón si hay una selección en la tabla, lo oculta si no."""
+        if self.tabla.selection():
+            self.btn_detalle.grid(row=4, column=0, pady=10)
+        else:
+            self.btn_detalle.grid_forget()
+
+    # Vista del Contenido por Sección
     def vista_ver_matricula(self):
+        self.btn_detalle.grid_forget()  # Ocultamos el botón al cambiar de vista
         self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
         self.lbl_info_seccion.configure(text="Visualizando las listas oficiales desglosadas por grados.")
         self.cargar_estudiantes_por_grado(self.combo_grado.get())
 
     def vista_notas(self):
+        self.btn_detalle.grid_forget()  # Ocultamos el botón al cambiar de vista
         self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
         self.lbl_info_seccion.configure(text="Módulo para el registro de calificaciones y asistencias por lapsos.")
         self.pantalla_datos.configure(state="normal")
@@ -217,6 +228,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.pantalla_datos.configure(state="disabled")
 
     def vista_administrar(self):
+        self.btn_detalle.grid_forget()  # Ocultamos el botón al cambiar de vista
         self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
         self.lbl_info_seccion.configure(text="Sección restringida para la modificación, ingresos o retiros de la matrícula.")
         self.pantalla_datos.configure(state="normal")
@@ -226,6 +238,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
 
     # --- LÓGICA DE LECTURA DE ARCHIVOS POR SEPARADO ---
     def cargar_estudiantes_por_grado(self, grado_seleccionado):
+        self.btn_detalle.grid_forget()  # Ocultamos el botón mientras se recarga el nuevo grado
         nombre_archivo = f"{grado_seleccionado.lower().replace(' ', '_')}.csv"
     
         for item in self.tabla.get_children():
