@@ -123,10 +123,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         
         self.btn_ver_matricula = ctk.CTkButton(self.sidebar_frame, text="   Ver Matrícula Escolar", command=self.vista_ver_matricula, height=35)
         self.btn_notas = ctk.CTkButton(self.sidebar_frame, text="   Cargar Notas / Asistencia", command=self.vista_notas, height=35)
-        # Boton Asistencia
-        self.btn_asistencia = ctk.CTkButton(self.sidebar_frame, text="Asistencia Diaria", command=self.vista_asistencia, height=35)
-# Ajuste de Boton Asistencia 
-        self.btn_asistencia.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
+        
         if self.rol in ["Directora", "Administrativo"]:
             self.btn_carga_inicial = ctk.CTkButton(self.sidebar_frame, text="⚙️ Carga Inicial (XLSX->CSV)", fg_color="#1a6332", hover_color="#114221", command=self.ejecutar_carga_inicial, height=35)
             self.btn_carga_inicial.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
