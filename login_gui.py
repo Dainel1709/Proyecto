@@ -4,6 +4,7 @@ from tkinter import ttk
 import pandas as pd
 import os
 import migrar_excel
+
 # Configuración del tema visual global
 ctk.set_appearance_mode("System")  
 ctk.set_default_color_theme("blue")
@@ -42,27 +43,18 @@ class FrameLogin(ctk.CTkFrame):
         self.label_footer = ctk.CTkLabel(master=self.card, text="Mérida, Venezuela", font=("Helvetica", 11), text_color="gray")
         self.label_footer.pack(side="bottom", pady=20)
 
-        # =========================================================================
-        # LÓGICA DE NAVEGACIÓN ENTRE CAMPOS (ACTUALIZADA)
-        # =========================================================================
-        
-        # En la cédula: Enter o Flecha Abajo pasan el foco a la contraseña
+        # Navegación entre campos
         self.input_cedula.bind("<Return>", self.pasar_a_contrasena)
         self.input_cedula.bind("<Down>", self.pasar_a_contrasena)
-
-        # En la contraseña: Enter ingresa, Flecha Arriba regresa a la cédula
         self.input_clave.bind("<Return>", self.validar_ingreso)
-        self.input_clave.bind("<Up>", self.regresar_a_cedula)  # <--- AGREGADO
+        self.input_clave.bind("<Up>", self.regresar_a_cedula)  
         
-        # Coloca el cursor automáticamente en la cédula al abrir la pantalla
         self.input_cedula.focus()
 
-    # Función auxiliar para ir hacia abajo
     def pasar_a_contrasena(self, event=None):
         self.input_clave.focus()
 
-    # Función auxiliar para ir hacia arriba
-    def regresar_a_cedula(self, event=None):  # <--- AGREGADO
+    def regresar_a_cedula(self, event=None):  
         self.input_cedula.focus()
 
     def validar_ingreso(self, event=None): 
@@ -107,6 +99,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.rol = rol_usuario
         self.callback_cerrar_sesion = callback_cerrar_sesion
         self.menu_estudiantes_abierto = False
+        self.df_actual = None
 
         # --- CONFIGURACIÓN DE LA BARRA LATERAL ---
         self.grid_columnconfigure(1, weight=1)
@@ -115,7 +108,6 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(10, weight=1) 
         
-        # Identificadores de usuario
         self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="U.E. Juana Ramírez", font=("Helvetica", 18, "bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(30, 10))
         self.user_frame = ctk.CTkFrame(self.sidebar_frame, fg_color="transparent")
@@ -132,7 +124,6 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.btn_ver_matricula = ctk.CTkButton(self.sidebar_frame, text="   Ver Matrícula Escolar", command=self.vista_ver_matricula, height=35)
         self.btn_notas = ctk.CTkButton(self.sidebar_frame, text="   Cargar Notas / Asistencia", command=self.vista_notas, height=35)
         
-        # BOTÓN NUEVO: Carga inicial masiva de archivos XLSX (Solo Directora/Admin)
         if self.rol in ["Directora", "Administrativo"]:
             self.btn_carga_inicial = ctk.CTkButton(self.sidebar_frame, text="⚙️ Carga Inicial (XLSX->CSV)", fg_color="#1a6332", hover_color="#114221", command=self.ejecutar_carga_inicial, height=35)
             self.btn_carga_inicial.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
@@ -169,10 +160,13 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.tabla.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
         self.tabla.bind("<<TreeviewSelect>>", self.controlar_visibilidad_boton)
 
-        # Botón dinámico abajo de la tabla
-        self.btn_detalle = ctk.CTkButton(self.contenido_frame, text="🔎 Ver / Editar Ficha Completa", command=self.mostrar_detalle_y_edicion)
+        # Contenedor inferior dinámico para los botones de acción en horizontal
+        self.frame_acciones_db = ctk.CTkFrame(self.contenido_frame, fg_color="transparent")
         
-        # Cuadro de texto alternativo para vistas vacías
+        self.btn_detalle = ctk.CTkButton(self.frame_acciones_db, text="🔎 Ver / Editar Ficha Completa")
+        self.btn_eliminar = ctk.CTkButton(self.frame_acciones_db, text="❌ Eliminar Alumno", fg_color="#912a2a", hover_color="#701e1e", command=self.ejecutar_eliminar_alumno)
+        self.btn_agregar = ctk.CTkButton(self.frame_acciones_db, text="➕ Añadir Nuevo Alumno", fg_color="#1a6332", hover_color="#114221", command=self.mostrar_ventana_agregar)
+
         self.pantalla_datos = ctk.CTkTextbox(self.contenido_frame, font=("Courier New", 12), corner_radius=10)
 
     def toggle_menu_estudiantes(self):
@@ -190,53 +184,71 @@ class FrameMenuPrincipal(ctk.CTkFrame):
             self.menu_estudiantes_abierto = False
 
     def controlar_visibilidad_boton(self, event=None):
-        """Muestra el botón si hay una selección en la tabla, lo oculta si no."""
+        """Gestiona la aparición dinámica de los botones basados en la sección actual."""
+        es_modulo_admin = "Sección de control de matrícula" in self.lbl_info_seccion.cget("text")
+
         if self.tabla.selection():
-            
-            self.btn_detalle.grid(row=4, column=0, columnspan=2, pady=15)
+            self.btn_detalle.grid(row=0, column=0, padx=10)
+            if es_modulo_admin:
+                self.btn_eliminar.grid(row=0, column=1, padx=10)
+            else:
+                self.btn_eliminar.grid_forget()
         else:
             self.btn_detalle.grid_forget()
+            self.btn_eliminar.grid_forget()
 
     def vista_ver_matricula(self):
-        self.btn_detalle.grid_forget()
-        self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
-        self.lbl_info_seccion.configure(text="Visualizando las listas oficiales desglosadas por grados.")
+        # Desaparecer el contenedor y forzar limpieza de botones críticos
+        self.frame_acciones_db.grid_forget()
+        self.btn_eliminar.grid_forget()
+        self.btn_agregar.grid_forget()
         
-        # Configurar el botón para SOLO VER los datos del representante sin peligro de modificar
+        self.frame_grados.grid(row=2, column=0, padx=10, pady=(0, 10), sticky="w")
+        self.lbl_info_seccion.configure(text="Visualizando las listas oficiales desglosadas por grados.")
         self.btn_detalle.configure(text="🔎 Ver Representante", command=self.mostrar_solo_lectura_representante, fg_color="#1a6332", hover_color="#114221")
         
         self.pantalla_datos.grid_forget()
-        self.tabla.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        self.tabla.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
+        
+        self.frame_acciones_db.grid(row=4, column=0, pady=15)
         self.cargar_estudiantes_por_grado(self.combo_grado.get())
 
     def vista_notas(self):
-        self.btn_detalle.grid_forget()  # Ocultamos el botón
-        self.tabla.grid_forget()        # Ocultamos la tabla de alumnos
+        self.frame_acciones_db.grid_forget()
+        self.btn_eliminar.grid_forget()
+        self.btn_agregar.grid_forget()
+        self.tabla.grid_forget()
         
-        self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
+        self.frame_grados.grid(row=2, column=0, padx=10, pady=(0, 10), sticky="w")
         self.lbl_info_seccion.configure(text="Módulo para el registro de calificaciones y asistencias por lapsos.")
         
-        self.pantalla_datos.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        self.pantalla_datos.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
         self.pantalla_datos.configure(state="normal")
         self.pantalla_datos.delete("0.0", "end")
         self.pantalla_datos.insert("0.0", f"=== CARGA DE NOTAS Y EVALUACIÓN ===\n\nDocente: {self.nombre}\nGrado Consultando: {self.combo_grado.get()}\n\nEstatus: Sección en desarrollo institucional...")
         self.pantalla_datos.configure(state="disabled")
 
     def vista_administrar(self):
+        self.frame_acciones_db.grid_forget()
         self.btn_detalle.grid_forget()
-        self.frame_grados.grid(row=2, column=0, columnspan=2, padx=10, pady=(0, 10), sticky="w")
-        self.lbl_info_seccion.configure(text="Sección de control de matrícula. Los cambios se inyectarán en el CSV y Excel oficial.")
+        self.btn_eliminar.grid_forget()
         
-        # Configurar el botón en modo ADMINISTRADOR para modificar campos
+        self.frame_grados.grid(row=2, column=0, padx=10, pady=(0, 10), sticky="w")
+        self.lbl_info_seccion.configure(text="Sección de control de matrícula. Los cambios se inyectarán en el CSV y Excel oficial.")
         self.btn_detalle.configure(text="⚙️ Administrar Ficha Alumno", command=self.mostrar_detalle_y_edicion, fg_color="#1f538d", hover_color="#14375e")
         
         self.pantalla_datos.grid_forget()
-        self.tabla.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        self.tabla.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
+        
+        # Posicionar contenedor e inyectar el botón de Agregar únicamente aquí
+        self.frame_acciones_db.grid(row=4, column=0, pady=15)
+        self.btn_agregar.grid(row=0, column=2, padx=10)
+        
         self.cargar_estudiantes_por_grado(self.combo_grado.get())
-        
-        
+
     def cargar_estudiantes_por_grado(self, grado_seleccionado):
         self.btn_detalle.grid_forget()
+        self.btn_eliminar.grid_forget()
         nombre_archivo = f"{grado_seleccionado.lower().replace(' ', '_')}.csv"
         for item in self.tabla.get_children(): self.tabla.delete(item)
         
@@ -254,7 +266,6 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         else:
             self.df_actual = None
 
-    # --- LÓGICA DE BOTÓN 1: MIGRAR DE EXCEL A CSV ---
     def ejecutar_carga_inicial(self):
         confirmar = messagebox.askyesno("Confirmación", "¿Desea escanear los archivos Excel oficiales para crear las listas .CSV por primera vez?")
         if confirmar:
@@ -264,33 +275,55 @@ class FrameMenuPrincipal(ctk.CTkFrame):
                 self.cargar_estudiantes_por_grado(self.combo_grado.get())
             else:
                 messagebox.showwarning("Aviso", "No se encontraron nuevos archivos de Matrícula .xlsx o no tenían datos correctos.")
+
+    def ejecutar_eliminar_alumno(self):
+        item_seleccionado = self.tabla.selection()
+        if not item_seleccionado: return
+        
+        valores = self.tabla.item(item_seleccionado)['values']
+        cedula_esc = str(valores[1])
+        cedula_id = str(valores[2])
+        nombre_alumno = valores[3]
+        grado_actual = self.combo_grado.get()
+        
+        cedula_llave = cedula_id if cedula_id != "No posee" else cedula_esc
+        
+        confirmar = messagebox.askyesno("Confirmar Eliminación", f"¿Está completamente seguro de eliminar permanentemente al alumno {nombre_alumno} de la institución?")
+        if confirmar:
+            exito, msg = migrar_excel.eliminar_estudiante_en_csv(grado_actual, cedula_llave)
+            if exito:
+                messagebox.showinfo("Éxito", "El alumno ha sido removido y la lista se ha reordenado secuencialmente.")
+                self.cargar_estudiantes_por_grado(grado_actual)
+                
+                # Sincronización directa con el Excel si es Directora/Admin
+                if self.rol in ["Directora", "Administrativo"]:
+                    sinc = messagebox.askyesno("Sincronizar", "¿Desea reescribir e impactar esta eliminación directamente en el Excel oficial?")
+                    if sinc:
+                        ok, msg_ex = migrar_excel.actualizar_excel_desde_csv(grado_actual)
+                        if ok: messagebox.showinfo("Excel Sincronizado", msg_ex)
+                        else: messagebox.showerror("Error Excel", msg_ex)
+            else:
+                messagebox.showerror("Error", msg)
+
     def mostrar_solo_lectura_representante(self):
         item_seleccionado = self.tabla.selection()
         if not item_seleccionado: return
         
         valores = self.tabla.item(item_seleccionado)['values']
         nombre_est = valores[3]
-        
-        # Extraer datos del DataFrame actual
         datos_est = self.df_actual[self.df_actual['Estudiante'] == nombre_est].iloc[0]
         
-        # --- CÁLCULO DE EDAD EN TIEMPO REAL ---
         edad_actual = migrar_excel.calcular_edad(
-            datos_est.get('Dia_Nac', 0), 
-            datos_est.get('Mes_Nac', 0), 
-            datos_est.get('Anio_Nac', 0)
+            datos_est.get('Dia_Nac', 0), datos_est.get('Mes_Nac', 0), datos_est.get('Anio_Nac', 0)
         )
-        # Ventana Flotante de Solo Lectura
+        
         top = ctk.CTkToplevel(self)
         top.title(f"Información Institucional - {nombre_est}")
         top.geometry("500x540")
         top.resizable(False, False)
-        top.focus_get()
+        top.attributes("-topmost", True)
 
-        # Título principal
         ctk.CTkLabel(top, text="Ficha Informativa del Estudiante", font=("Helvetica", 16, "bold"), text_color="#1f538d").pack(pady=(15, 5))
-        
-        # Contenedor Datos Estudiante
         frame_est = ctk.CTkFrame(top)
         frame_est.pack(fill="x", padx=20, pady=5)
         
@@ -304,10 +337,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         )
         ctk.CTkLabel(frame_est, text=txt_estudiante, justify="left", font=("Helvetica", 12)).pack(padx=15, pady=10, anchor="w")
 
-        # Título Representante
         ctk.CTkLabel(top, text="Datos del Representante Legal", font=("Helvetica", 16, "bold"), text_color="#1a6332").pack(pady=(15, 5))
-
-        # Contenedor Datos Representante
         frame_rep = ctk.CTkFrame(top)
         frame_rep.pack(fill="x", padx=20, pady=5)
 
@@ -320,9 +350,123 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         )
         ctk.CTkLabel(frame_rep, text=txt_repr, justify="left", font=("Helvetica", 12)).pack(padx=15, pady=10, anchor="w")
 
-        # Botón para cerrar la consulta
         ctk.CTkButton(top, text="Entendido / Cerrar", fg_color="gray", hover_color="#555555", command=top.destroy).pack(pady=20)
-    # --- LÓGICA DE VENTANA PARA MODIFICAR DATOS (POR SEPARADO) Y SINCRONIZAR EXCEL ---
+
+    def mostrar_ventana_agregar(self):
+        grado_actual = self.combo_grado.get()
+        top = ctk.CTkToplevel(self)
+        top.title(f"Añadir Nuevo Estudiante - {grado_actual}")
+        top.geometry("560x580")
+        top.resizable(False, False)
+        top.attributes("-topmost", True)
+
+        tabview = ctk.CTkTabview(top, width=520, height=440)
+        tabview.pack(pady=10, padx=20)
+        tab_alumno = tabview.add("Datos Estudiante")
+        tab_repr = tabview.add("Datos Representante")
+
+        # Inputs Alumno
+        ctk.CTkLabel(tab_alumno, text="Nombres del Estudiante:").pack(anchor="w", padx=10, pady=2)
+        entry_nom_est = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
+        entry_nom_est = tab_alumno.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_alumno, text="Apellidos del Estudiante:").pack(anchor="w", padx=10, pady=2)
+        entry_ape_est = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
+        entry_ape_est = tab_alumno.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_alumno, text="Cédula Escolar (Opcional):").pack(anchor="w", padx=10, pady=2)
+        entry_ced_esc = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
+        entry_ced_esc = tab_alumno.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_alumno, text="Cédula Identidad (Opcional):").pack(anchor="w", padx=10, pady=2)
+        entry_ced_id = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
+        entry_ced_id = tab_alumno.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_alumno, text="Lugar de Nacimiento:").pack(anchor="w", padx=10, pady=2)
+        entry_lugar = ctk.CTkEntry(tab_alumno, width=400).pack(padx=10, pady=2)
+        entry_lugar = tab_alumno.winfo_children()[-1]
+
+        frame_fecha = ctk.CTkFrame(tab_alumno, fg_color="transparent")
+        frame_fecha.pack(fill="x", padx=10, pady=5)
+        ctk.CTkLabel(frame_fecha, text="Día:").grid(row=0, column=0, padx=2)
+        entry_dia = ctk.CTkEntry(frame_fecha, width=40); entry_dia.grid(row=0, column=1, padx=5)
+        ctk.CTkLabel(frame_fecha, text="Mes:").grid(row=0, column=2, padx=2)
+        entry_mes = ctk.CTkEntry(frame_fecha, width=40); entry_mes.grid(row=0, column=3, padx=5)
+        ctk.CTkLabel(frame_fecha, text="Año:").grid(row=0, column=4, padx=2)
+        entry_anio = ctk.CTkEntry(frame_fecha, width=60); entry_anio.grid(row=0, column=5, padx=5)
+
+        ctk.CTkLabel(tab_alumno, text="Género (M/F):").pack(anchor="w", padx=10, pady=2)
+        entry_genero = ctk.CTkEntry(tab_alumno, width=80).pack(anchor="w", padx=10, pady=2)
+        entry_genero = tab_alumno.winfo_children()[-1]
+
+        # Inputs Representante
+        ctk.CTkLabel(tab_repr, text="Nombres del Representante:").pack(anchor="w", padx=10, pady=2)
+        entry_nom_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
+        entry_nom_rep = tab_repr.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_repr, text="Apellidos del Representante:").pack(anchor="w", padx=10, pady=2)
+        entry_ape_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
+        entry_ape_rep = tab_repr.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_repr, text="Cédula de Identidad:").pack(anchor="w", padx=10, pady=2)
+        entry_ced_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
+        entry_ced_rep = tab_repr.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_repr, text="Contacto Telefónico:").pack(anchor="w", padx=10, pady=2)
+        entry_tlf_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
+        entry_tlf_rep = tab_repr.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_repr, text="Parentesco:").pack(anchor="w", padx=10, pady=2)
+        entry_par_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
+        entry_par_rep = tab_repr.winfo_children()[-1]
+
+        ctk.CTkLabel(tab_repr, text="Dirección Completa:").pack(anchor="w", padx=10, pady=2)
+        entry_dir_rep = ctk.CTkEntry(tab_repr, width=400).pack(padx=10, pady=2)
+        entry_dir_rep = tab_repr.winfo_children()[-1]
+
+        def guardar_nuevo_alumno():
+            if not entry_nom_est.get().strip() or not entry_ape_est.get().strip():
+                messagebox.showwarning("Campos Requeridos", "El nombre y apellido del estudiante son campos obligatorios.")
+                return
+                
+            dic_est = {
+                'Cédula Escolar': entry_ced_esc.get().strip() or "No posee",
+                'Cédula Identidad': entry_ced_id.get().strip() or "No posee",
+                'Nombres_Est': entry_nom_est.get().strip(),
+                'Apellidos_Est': entry_ape_est.get().strip(),
+                'Lugar de Nacimiento': entry_lugar.get().strip(),
+                'Dia_Nac': entry_dia.get().strip(),
+                'Mes_Nac': entry_mes.get().strip(),
+                'Anio_Nac': entry_anio.get().strip(),
+                'Genero': entry_genero.get().strip().upper()
+            }
+            dic_rep = {
+                'Repr_Nombre': entry_nom_rep.get().strip(),
+                'Repr_Apellido': entry_ape_rep.get().strip(),
+                'Cédula': entry_ced_rep.get().strip(),
+                'Contacto': entry_tlf_rep.get().strip(),
+                'Parentesco': entry_par_rep.get().strip(),
+                'Dirección': entry_dir_rep.get().strip()
+            }
+            
+            exito, msg = migrar_excel.agregar_estudiante_en_csv(grado_actual, dic_est, dic_rep)
+            if exito:
+                messagebox.showinfo("Éxito", "Estudiante anexado a la base de datos CSV de forma correcta.")
+                self.cargar_estudiantes_por_grado(grado_actual)
+                
+                if self.rol in ["Directora", "Administrativo"]:
+                    sinc_excel = messagebox.askyesno("Sincronizar", "¿Desea inyectar este nuevo alumno directo al Excel oficial (.xlsx) de este grado?")
+                    if sinc_excel:
+                        ok_ex, msg_ex = migrar_excel.actualizar_excel_desde_csv(grado_actual)
+                        if ok_ex: messagebox.showinfo("Excel Sincronizado", msg_ex)
+                        else: messagebox.showerror("Error Excel", msg_ex)
+                top.destroy()
+            else:
+                messagebox.showerror("Error", msg)
+
+        btn_crear = ctk.CTkButton(top, text="➕ Agregar Alumno Oficial", fg_color="#1a6332", command=guardar_nuevo_alumno)
+        btn_crear.pack(pady=15)
+
     def mostrar_detalle_y_edicion(self):
         item_seleccionado = self.tabla.selection()
         if not item_seleccionado: return
@@ -330,25 +474,22 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         valores = self.tabla.item(item_seleccionado)['values']
         nombre_est = valores[3]
         
-        # Extraer los datos guardados en el DataFrame
         datos_est = self.df_actual[self.df_actual['Estudiante'] == nombre_est].iloc[0]
         cedula_llave = datos_est['Cédula Identidad'] if datos_est['Cédula Identidad'] != "No posee" else datos_est['Cédula Escolar']
         grado_actual = self.combo_grado.get()
 
-        # Ventana Flotante de Modificación
         top = ctk.CTkToplevel(self)
         top.title(f"Ficha Completa de {nombre_est}")
-        top.geometry("560 rounded x 580")
+        top.geometry("560x580")
         top.resizable(False, False)
-        top.focus_get()
+        top.attributes("-topmost", True)
 
-        # Pestañas usando CTkTabview para separar Alumno de Representante
         tabview = ctk.CTkTabview(top, width=520, height=440)
         tabview.pack(pady=10, padx=20)
         tab_alumno = tabview.add("Datos Estudiante")
         tab_repr = tabview.add("Datos Representante")
 
-        # --- CAMPOS: ESTUDIANTE ---
+        # Inputs Edición Alumno
         ctk.CTkLabel(tab_alumno, text="Nombres del Estudiante:").pack(anchor="w", padx=10, pady=2)
         entry_nom_est = ctk.CTkEntry(tab_alumno, width=400)
         entry_nom_est.insert(0, datos_est.get('Nombres_Est', ''))
@@ -366,13 +507,10 @@ class FrameMenuPrincipal(ctk.CTkFrame):
 
         frame_fecha = ctk.CTkFrame(tab_alumno, fg_color="transparent")
         frame_fecha.pack(fill="x", padx=10, pady=5)
-        
         ctk.CTkLabel(frame_fecha, text="Día:").grid(row=0, column=0, padx=2)
         entry_dia = ctk.CTkEntry(frame_fecha, width=40); entry_dia.insert(0, datos_est.get('Dia_Nac', '')); entry_dia.grid(row=0, column=1, padx=5)
-        
         ctk.CTkLabel(frame_fecha, text="Mes:").grid(row=0, column=2, padx=2)
         entry_mes = ctk.CTkEntry(frame_fecha, width=40); entry_mes.insert(0, datos_est.get('Mes_Nac', '')); entry_mes.grid(row=0, column=3, padx=5)
-        
         ctk.CTkLabel(frame_fecha, text="Año:").grid(row=0, column=4, padx=2)
         entry_anio = ctk.CTkEntry(frame_fecha, width=60); entry_anio.insert(0, datos_est.get('Anio_Nac', '')); entry_anio.grid(row=0, column=5, padx=5)
 
@@ -381,11 +519,11 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         entry_genero.insert(0, datos_est.get('Genero', ''))
         entry_genero.pack(anchor="w", padx=10, pady=2)
 
-        # --- CAMPOS: REPRESENTANTE ---
+        # Inputs Edición Representante
         ctk.CTkLabel(tab_repr, text="Nombres del Representante:").pack(anchor="w", padx=10, pady=2)
         entry_nom_rep = ctk.CTkEntry(tab_repr, width=400)
         entry_nom_rep.insert(0, datos_est.get('Repr_Nombre', ''))
-        entry_repr_nom = entry_nom_rep.pack(padx=10, pady=2)
+        entry_nom_rep.pack(padx=10, pady=2)
 
         ctk.CTkLabel(tab_repr, text="Apellidos del Representante:").pack(anchor="w", padx=10, pady=2)
         entry_ape_rep = ctk.CTkEntry(tab_repr, width=400)
@@ -412,7 +550,6 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         entry_dir_rep.insert(0, datos_est.get('Dirección', ''))
         entry_dir_rep.pack(padx=10, pady=2)
 
-        # Acciones guardar
         def guardar_cambios_locales():
             dic_est = {
                 'Nombres_Est': entry_nom_est.get().strip(),
@@ -437,7 +574,6 @@ class FrameMenuPrincipal(ctk.CTkFrame):
                 messagebox.showinfo("Éxito", "Los cambios han sido aplicados al archivo CSV.")
                 self.cargar_estudiantes_por_grado(grado_actual)
                 
-                # PREGUNTA CLAVE: Sincronizar directo al Excel oficial en ese instante
                 if self.rol in ["Directora", "Administrativo"]:
                     sinc_excel = messagebox.askyesno("Sincronizar", "¿Desea actualizar y exportar estos cambios directamente al Excel oficial (.xlsx) de este grado?")
                     if sinc_excel:
@@ -451,34 +587,30 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         btn_guardar_cambios = ctk.CTkButton(top, text="💾 Guardar Cambios e Inyectar Datos", fg_color="#1f538d", command=guardar_cambios_locales)
         btn_guardar_cambios.pack(pady=15)
 
+
 # ==========================================
 # 3. VENTANA MAESTRA ÚNICA
 # ==========================================
 class AppEscuela(ctk.CTk):
     def __init__(self):
         super().__init__()
-
         self.title("Sistema de Gestión - U.E. Juana Ramírez")
         self.geometry("1100x650")
         self.resizable(True, True)
 
-        # Arrancar maximizado directamente
         self.after(50, lambda: self.state('zoomed'))
-
         self.frame_actual = None
         self.mostrar_pantalla_login()
 
     def mostrar_pantalla_login(self):
         if self.frame_actual is not None:
             self.frame_actual.destroy()
-
         self.frame_actual = FrameLogin(self, callback_login_exitoso=self.mostrar_pantalla_dashboard)
         self.frame_actual.pack(fill="both", expand=True)
 
     def mostrar_pantalla_dashboard(self, nombre, rol):
         if self.frame_actual is not None:
             self.frame_actual.destroy()
-
         self.frame_actual = FrameMenuPrincipal(self, nombre, rol, callback_cerrar_sesion=self.mostrar_pantalla_login)
         self.frame_actual.pack(fill="both", expand=True)
 

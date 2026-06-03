@@ -230,6 +230,92 @@ def actualizar_excel_desde_csv(grado_texto):
         return True, f"¡Excel '{nombre_excel}' sincronizado y guardado con éxito!"
     except Exception as e:
         return False, f"Error al escribir en Excel: {e}"
+# --- FUNCIÓN 4: AGREGAR UN NUEVO ESTUDIANTE ---
+def agregar_estudiante_en_csv(grado_texto, datos_estudiante, datos_representante):
+    """
+    Añade un estudiante al final del CSV de un grado y recalcula los números de lista.
+    """
+    num_grado = convertir_nombre_grado_a_numero(grado_texto)
+    if not num_grado: return False, "Grado no válido."
+    
+    nombre_csv = CSV_SALIDA[num_grado]
+    if not os.path.exists(nombre_csv):
+        return False, f"El archivo CSV {nombre_csv} no existe. Debe cargarlo primero."
+        
+    try:
+        df = pd.read_csv(nombre_csv, dtype=str)
+        
+        # Validar si la cédula ya existe para no duplicar alumnos
+        cedula_nueva = datos_estudiante.get('Cédula Identidad', 'No posee')
+        if cedula_nueva != 'No posee' and cedula_nueva in df['Cédula Identidad'].values:
+            return False, "Error: Ya existe un estudiante registrado con esa Cédula de Identidad."
 
+        # Calcular el siguiente número de lista de forma automática
+        nuevo_num_lista = len(df) + 1
+        
+        # Unir toda la información en una nueva fila compatible con las columnas del CSV
+        nueva_fila = {
+            'Número de lista': str(nuevo_num_lista),
+            'Cédula Escolar': datos_estudiante.get('Cédula Escolar', 'No posee'),
+            'Cédula Identidad': cedula_nueva,
+            'Estudiante': f"{datos_estudiante.get('Nombres_Est', '')} {datos_estudiante.get('Apellidos_Est', '')}".strip(),
+            'Nombres_Est': datos_estudiante.get('Nombres_Est', ''),
+            'Apellidos_Est': datos_estudiante.get('Apellidos_Est', ''),
+            'Lugar de Nacimiento': datos_estudiante.get('Lugar de Nacimiento', ''),
+            'Genero': datos_estudiante.get('Genero', '').upper(),
+            'Fecha de nacimiento': f"{datos_estudiante.get('Dia_Nac', '')}/{datos_estudiante.get('Mes_Nac', '')}/{datos_estudiante.get('Anio_Nac', '')}".strip(),
+            'Dia_Nac': datos_estudiante.get('Dia_Nac', ''),
+            'Mes_Nac': datos_estudiante.get('Mes_Nac', ''),
+            'Anio_Nac': datos_estudiante.get('Anio_Nac', ''),
+            'Representante': f"{datos_representante.get('Repr_Nombre', '')} {datos_representante.get('Repr_Apellido', '')}".strip(),
+            'Repr_Nombre': datos_representante.get('Repr_Nombre', ''),
+            'Repr_Apellido': datos_representante.get('Repr_Apellido', ''),
+            'Contacto': datos_representante.get('Contacto', ''),
+            'Cédula': datos_representante.get('Cédula', ''),
+            'Dirección': datos_representante.get('Dirección', ''),
+            'Parentesco': datos_representante.get('Parentesco', '')
+        }
+        
+        # Insertar fila y guardar CSV
+        df = pd.concat([df, pd.DataFrame([nueva_fila])], ignore_index=True)
+        df.to_csv(nombre_csv, index=False, encoding='utf-8-sig')
+        return True, "Estudiante agregado al CSV correctamente."
+    except Exception as e:
+        return False, f"Error al agregar estudiante: {e}"
+
+
+# --- FUNCIÓN 5: ELIMINAR UN ESTUDIANTE Y REORDENAR ---
+def eliminar_estudiante_en_csv(grado_texto, cedula_alumno):
+    """
+    Elimina un estudiante por su cédula (Identidad o Escolar) y reordena los números de lista correlativamente.
+    """
+    num_grado = convertir_nombre_grado_a_numero(grado_texto)
+    if not num_grado: return False, "Grado no válido."
+    
+    nombre_csv = CSV_SALIDA[num_grado]
+    if not os.path.exists(nombre_csv):
+        return False, f"El archivo CSV {nombre_csv} no existe."
+        
+    try:
+        df = pd.read_csv(nombre_csv, dtype=str)
+        
+        # Buscar la fila por Cédula de Identidad o Escolar
+        condicion = (df['Cédula Identidad'] == str(cedula_alumno)) | (df['Cédula Escolar'] == str(cedula_alumno))
+        idx_busqueda = df[condicion].index
+        
+        if idx_busqueda.empty:
+            return False, "Estudiante no encontrado en la base de datos."
+            
+        # Eliminar la fila
+        df = df.drop(idx_busqueda[0]).reset_index(drop=True)
+        
+        # REORDENAR: Volver a numerar la columna 'Número de lista' del 1 en adelante
+        df['Número de lista'] = [str(i + 1) for i in range(len(df))]
+        
+        # Guardar cambios
+        df.to_csv(nombre_csv, index=False, encoding='utf-8-sig')
+        return True, "Estudiante removido de la base de datos y lista reorganizada."
+    except Exception as e:
+        return False, f"Error al eliminar: {e}"
 if __name__ == "__main__":
     migrar_por_grados_separados()
