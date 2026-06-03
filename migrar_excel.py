@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from openpyxl import load_workbook
-
+from datetime import datetime
 # =========================================================================
 # CONFIGURACIÓN DE COLUMNAS (Índices basados en 0 para Python/Pandas)
 # =========================================================================
@@ -50,7 +50,26 @@ def convertir_nombre_grado_a_numero(grado_texto):
         if str(num) in txt or nombre.split('_')[0] in txt:
             return num
     return None
-
+def calcular_edad(dia_nac, mes_nac, anio_nac):
+    """Calcula la edad exacta basada en la fecha actual del sistema"""
+    try:
+        # Convertir a enteros por seguridad
+        dia = int(float(dia_nac))
+        mes = int(float(mes_nac))
+        anio = int(float(anio_nac))
+        
+        hoy = datetime.now()
+        # Resta básica de años
+        edad = hoy.year - anio
+        
+        # Verificar si ya pasó su cumpleaños este año (si no, restamos 1)
+        if (hoy.month, hoy.day) < (mes, dia):
+            edad -= 1
+            
+        return f"{edad} años"
+    except (ValueError, TypeError):
+        return "No calculable"
+    
 # --- FUNCIÓN 1: MIGRACIÓN INICIAL (TU REPO) ---
 def migrar_por_grados_separados():
     print("=== MIGRACIÓN DE FORMATO OFICIAL A CSV POR GRADOS ===")
