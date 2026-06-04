@@ -56,7 +56,7 @@ class FrameLogin(ctk.CTkFrame):
 
     def regresar_a_cedula(self, event=None):  
         self.input_cedula.focus()
-
+    
     def validar_ingreso(self, event=None): 
         cedula = self.input_cedula.get().strip() 
         clave = self.input_clave.get().strip() 
@@ -122,7 +122,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.btn_estudiantes.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
         
         self.btn_ver_matricula = ctk.CTkButton(self.sidebar_frame, text="   Ver Matrícula Escolar", command=self.vista_ver_matricula, height=35)
-        self.btn_notas = ctk.CTkButton(self.sidebar_frame, text="   Cargar Notas / Asistencia", command=self.vista_notas, height=35)
+        self.btn_asistencia = ctk.CTkButton(self.sidebar_frame, text="   Asistencia", command=self.vista_asistencia, height=35)
         
         if self.rol in ["Directora", "Administrativo"]:
             self.btn_carga_inicial = ctk.CTkButton(self.sidebar_frame, text="⚙️ Carga Inicial (XLSX->CSV)", fg_color="#1a6332", hover_color="#114221", command=self.ejecutar_carga_inicial, height=35)
@@ -172,13 +172,13 @@ class FrameMenuPrincipal(ctk.CTkFrame):
     def toggle_menu_estudiantes(self):
         if not self.menu_estudiantes_abierto:
             self.btn_ver_matricula.grid(row=3, column=0, padx=20, pady=3, sticky="ew")
-            self.btn_notas.grid(row=4, column=0, padx=20, pady=3, sticky="ew")
+            self.btn_asistencia.grid(row=4, column=0, padx=20, pady=3, sticky="ew")
             if hasattr(self, 'btn_admin'): self.btn_admin.grid(row=5, column=0, padx=20, pady=3, sticky="ew")
             self.btn_estudiantes.configure(text="Estudiantes ▲")
             self.menu_estudiantes_abierto = True
         else:
             self.btn_ver_matricula.grid_forget()
-            self.btn_notas.grid_forget()
+            self.btn_asistencia.grid_forget()
             if hasattr(self, 'btn_admin'): self.btn_admin.grid_forget()
             self.btn_estudiantes.configure(text="Estudiantes ▼")
             self.menu_estudiantes_abierto = False
@@ -213,7 +213,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.frame_acciones_db.grid(row=4, column=0, pady=15)
         self.cargar_estudiantes_por_grado(self.combo_grado.get())
 
-    def vista_notas(self):
+    """def vista_notas(self):
         self.frame_acciones_db.grid_forget()
         self.btn_eliminar.grid_forget()
         self.btn_agregar.grid_forget()
@@ -227,6 +227,8 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.pantalla_datos.delete("0.0", "end")
         self.pantalla_datos.insert("0.0", f"=== CARGA DE NOTAS Y EVALUACIÓN ===\n\nDocente: {self.nombre}\nGrado Consultando: {self.combo_grado.get()}\n\nEstatus: Sección en desarrollo institucional...")
         self.pantalla_datos.configure(state="disabled")
+PROXIMAMENTE: Implementar funcionalidad de carga de notas , con integración a archivos oficiales y generación de reportes.
+        """
 
     def vista_administrar(self):
         self.frame_acciones_db.grid_forget()
@@ -310,77 +312,7 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         # 6. Cargamos los datos del grado seleccionado actualmente
         self.cargar_datos_segun_vista()
         
-    #Metodo del Boton Asistencia #2
-    """
-    def cambiar_estatus_asistencia(self, event):
-    # Verificar que estemos en el modo correcto
-        if getattr(self, "vista_actual", "") != "asistencia":
-            return
-            
-        # Identificar la fila y columna donde se hizo el doble clic
-        region = self.tabla.identify_region(event.x, event.y)
-        if region != "cell":
-            return
-            
-        column_id = self.tabla.identify_column(event.x) # Devuelve algo como '#3', '#4'
-        item_id = self.tabla.focus() # Fila seleccionada
-        
-        if not item_id:
-            return
-            
-        # Mapear el ID numérico de la columna de Tkinter con el nombre real
-        # #1=id, #2=nombre, #3=lunes, #4=martes, #5=miercoles, etc.
-        col_index = int(column_id.replace("#", ""))
-        
-        # Solo permitimos modificar las columnas de los días (de la 3 a la 7)
-        if 3 <= col_index <= 7:
-            dias = ["lunes", "martes", "miercoles", "jueves", "viernes"]
-            dia_seleccionado = dias[col_index - 3]
-            
-            # Obtener el estado actual de esa celda
-            valores_actuales = list(self.tabla.item(item_id, "values"))
-            estado_actual = valores_actuales[col_index - 1]
-            
-            # Lógica de cambio de estado interactivo
-            if estado_actual == "" or estado_actual == " ":
-                nuevo_estado = "Presente ✔️"
-            elif "Presente" in estado_actual:
-                nuevo_estado = "Ausente ❌"
-            else:
-                nuevo_estado = " " # Volver a dejar vacío
-                
-            # Actualizar la tabla visualmente
-            valores_actuales[col_index - 1] = nuevo_estado
-            self.tabla.item(item_id, values=valores_actuales)
-         
-        # Metodo del Boton de Asistencia #3
-        
-    def guardar_asistencia_semanal(self):
-        datos_a_guardar = []
-        
-        # Recorrer cada fila de la tabla visual
-        for item in self.tabla.get_children():
-            valores = self.tabla.item(item, "values")
-            cedula = valores[0]
-            nombre = valores[1]
-            
-            # Contamos cuántas asistencias y faltas acumuló esta semana
-            asistencias = sum(1 for v in valores[2:7] if "Presente" in v)
-            faltas = sum(1 for v in valores[2:7] if "Ausente" in v)
-            
-            datos_a_guardar.append({
-                "Cedula": cedula,
-                "Nombre": nombre,
-                "Asistencias_Semana": asistencias,
-                "Faltas_Semana": faltas
-            })
-        
-        # Aquí integras tu lógica con Pandas para actualizar tu archivo de registros:
-        # df = pd.read_excel("matricula_estudiantes.xlsx")
-        # ... actualizar el histórico de asistencias usando la Cédula ...
-        
-        messagebox.showinfo("Éxito", "El registro de la asistencia semanal ha sido guardado exitosamente.")
-        """
+    
     def ejecutar_eliminar_alumno(self):
         item_seleccionado = self.tabla.selection()
         if not item_seleccionado: return

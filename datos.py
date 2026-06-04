@@ -39,3 +39,4 @@ class GestorArchivos:
             print(f"Asistencia registrada con éxito para la fecha {fecha_hoy}.")
         except Exception as e:
             print(f"Ocurrió un error al registrar la asistencia: {e}")
+    
