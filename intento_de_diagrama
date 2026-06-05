@@ -1,0 +1,51 @@
+=========================================================
+       |                  MODELO DE SEGURIDAD                  |
+       =========================================================
+                                [Usuario] 
+                         (Clase Base / Interfaz)
+                         + id_usuario: str
+                         + nombre: str
+                         + rol: str
+                         + mostrar_panel()*
+                                   ^
+                                   | (Herencia)
+         --------------------------+--------------------------
+         |                         |                         |
+    [Directora]             [Administrativo]            [Profesora]
+  + mostrar_panel()        + mostrar_panel()         + mostrar_panel()
+  (Acceso Total)           (Gestión Personal)        (Gestión Alumnos)
+         ^                         ^                         ^
+         =====================================================
+                                   |
+                     Intercepta llamadas usando:
+                             [@requiere_rol]
+                                   |
+                                   v
+       =========================================================
+       |                 SISTEMA DE PERSISTENCIA               |
+       =========================================================
+                           [GestorArchivos]
+                        (Métodos Estáticos)
+                        + leer_csv()
+                        + guardar_csv()
+                        + registrar_asistencia()
+                        + obtener_asistencia_estudiantes()
+                        + guardar_asistencia_estudiantes()
+                                   ^
+                                   | (Lee/Escribe archivos .csv / .xlsx)
+                                   v
+       =========================================================
+       |                    CAPA DE INTERFAZ                   |
+       =========================================================
+                             [AppEscuela]
+                        (Ventana Principal CTk)
+                        + frame_actual: CTkFrame
+                        + mostrar_pantalla_login()
+                        + mostrar_pantalla_dashboard()
+                                   |
+                                   | (Despliega)
+                                   v
+                     [VentanaAsistenciaModerna]
+                         (CTkToplevel Window)
+         o-- Usa para fechas --> [CTkCalendario] (Frame Personalizado)
+         o-- Consulta / Guarda datos --> [GestorArchivos]
