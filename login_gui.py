@@ -123,8 +123,12 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.btn_estudiantes.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
         
         self.btn_ver_matricula = ctk.CTkButton(self.sidebar_frame, text="   Ver Matrícula Escolar", command=self.vista_ver_matricula, height=35)
-        self.btn_asistencia = ctk.CTkButton(self.sidebar_frame, text="   Asistencia", command=self.vista_asistencia, height=35)
-        
+        self.btn_asistencia = ctk.CTkButton(
+            master=self.panel_acciones, 
+            text="📋 Control de Asistencia", 
+            command=lambda: VentanaAsistenciaModerna(self) # <- Abre el módulo de asistencia interactivo
+        )
+        self.btn_asistencia.pack(pady=10)
         if self.rol in ["Directora", "Administrativo"]:
             self.btn_carga_inicial = ctk.CTkButton(self.sidebar_frame, text="⚙️ Carga Inicial (XLSX->CSV)", fg_color="#1a6332", hover_color="#114221", command=self.ejecutar_carga_inicial, height=35)
             self.btn_carga_inicial.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
