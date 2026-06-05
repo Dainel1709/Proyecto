@@ -22,25 +22,25 @@ class TestErroresCriticosYLunaDeGrados(unittest.TestCase):
         columnas_reales_csv = ['Número de lista', 'Estudiante', 'Dia_Nac', 'Mes_Nac', 'Anio_Nac']
         df_simulado = pd.DataFrame([[1, "Juan Perez", "10", "05", "2015"]], columns=columnas_reales_csv)
         
-        # Guardamos un archivo temporal de prueba
-        archivo_test = '1er_grado.csv'
+        # CAMBIO AQUÍ: Usamos un nombre único que NUNCA coincida con tus archivos reales
+        archivo_test = 'temporal_test_para_pruebas_unitarias.csv'
         df_simulado.to_csv(archivo_test, index=False)
         
         profesora = Profesora(102, "María", "Profesora")
         
-        try:
-            # Ejecutamos tu función
-            actualizar_edades(profesora)
-            
-            # Volvemos a leer el archivo para ver si cambió algo
-            df_resultado = pd.read_csv(archivo_test)
-            
-            # Si tu función requiere que incremente la edad, debería existir la columna o verse reflejado.
-            # Aquí comprobamos que el archivo sigue idéntico porque no encontró la columna 'edad'
-            self.assertNotIn('edad', df_resultado.columns, "¡La columna 'edad' no existe en el esquema de migración!")
-        finally:
-            if os.path.exists(archivo_test):
-                os.remove(archivo_test)
+        # Parcheamos temporalmente GRADOS_CSV dentro de 'main' para que apunte a nuestro archivo de mentira
+        with patch('main.GRADOS_CSV', [archivo_test]):
+            try:
+                # Ejecutamos tu función
+                actualizar_edades(profesora)
+                
+                # Volvemos a leer el archivo de mentira para ver si cambió algo
+                df_resultado = pd.read_csv(archivo_test)
+                
+                self.assertNotIn('edad', df_resultado.columns, "¡La columna 'edad' no existe en el esquema de migración!")
+            finally:
+                if os.path.exists(archivo_test):
+                    os.remove(archivo_test)
 
     def test_falla_conversion_grados_falsos_positivos(self):
         """
@@ -99,7 +99,7 @@ class TestUtilidadesTratamientoDatos(unittest.TestCase):
 class TestModulosEntradaYMenus(unittest.TestCase):
     """Simula las entradas de teclado del usuario usando mocks."""
 
-    @patch('builtins.input', side_effects=['101', 'si'])
+    @patch('builtins.input', side_effect=['101', 'si'])
     @patch('datos.GestorArchivos.registrar_asistencia')
     def test_registrar_asistencia_valores_validos(self, mock_registrar, mock_input):
         admin = Administrativo(3, "Pedro", "Administrativo")
@@ -107,7 +107,7 @@ class TestModulosEntradaYMenus(unittest.TestCase):
         # Comprueba que la función extrajo el input y llamó correctamente al grabador de archivos
         mock_registrar.assert_called_once_with(101, 'si')
 
-    @patch('builtins.input', side_effects=['101', 'tal vez'])
+    @patch('builtins.input', side_effect=['101', 'tal vez'])
     @patch('datos.GestorArchivos.registrar_asistencia')
     def test_registrar_asistencia_valores_invalidos(self, mock_registrar, mock_input):
         admin = Administrativo(3, "Pedro", "Administrativo")
