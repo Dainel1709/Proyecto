@@ -125,12 +125,15 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.btn_estudiantes.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
         
         self.btn_ver_matricula = ctk.CTkButton(self.sidebar_frame, text="   Ver Matrícula Escolar", command=self.vista_ver_matricula, height=35)
+        
+        # CORRECCIÓN AQUÍ: Cambiamos el master a sidebar_frame, agregamos el alto y quitamos el .pack()
         self.btn_asistencia = ctk.CTkButton(
-            master=self.panel_acciones, 
+            self.sidebar_frame, 
             text="📋 Control de Asistencia", 
-            command=lambda: VentanaAsistenciaModerna(self) # <- Abre el módulo de asistencia interactivo
+            command=lambda: VentanaAsistenciaModerna(self),
+            height=35
         )
-        self.btn_asistencia.pack(pady=10)
+        
         if self.rol in ["Directora", "Administrativo"]:
             self.btn_carga_inicial = ctk.CTkButton(self.sidebar_frame, text="⚙️ Carga Inicial (XLSX->CSV)", fg_color="#1a6332", hover_color="#114221", command=self.ejecutar_carga_inicial, height=35)
             self.btn_carga_inicial.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
@@ -220,23 +223,6 @@ class FrameMenuPrincipal(ctk.CTkFrame):
         self.frame_acciones_db.grid(row=4, column=0, pady=15)
         self.cargar_estudiantes_por_grado(self.combo_grado.get())
 
-    """def vista_notas(self):
-        self.frame_acciones_db.grid_forget()
-        self.btn_eliminar.grid_forget()
-        self.btn_agregar.grid_forget()
-        self.tabla.grid_forget()
-        
-        self.frame_grados.grid(row=2, column=0, padx=10, pady=(0, 10), sticky="w")
-        self.lbl_info_seccion.configure(text="Módulo para el registro de calificaciones y asistencias por lapsos.")
-        
-        self.pantalla_datos.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
-        self.pantalla_datos.configure(state="normal")
-        self.pantalla_datos.delete("0.0", "end")
-        self.pantalla_datos.insert("0.0", f"=== CARGA DE NOTAS Y EVALUACIÓN ===\n\nDocente: {self.nombre}\nGrado Consultando: {self.combo_grado.get()}\n\nEstatus: Sección en desarrollo institucional...")
-        self.pantalla_datos.configure(state="disabled")
-PROXIMAMENTE: Implementar funcionalidad de carga de notas , con integración a archivos oficiales y generación de reportes.
-        """
-
     def vista_administrar(self):
         self.frame_acciones_db.grid_forget()
         self.btn_detalle.grid_forget()
@@ -286,40 +272,7 @@ PROXIMAMENTE: Implementar funcionalidad de carga de notas , con integración a a
                 messagebox.showwarning("Aviso", "No se encontraron nuevos archivos de Matrícula .xlsx o no tenían datos correctos.")
     # Metodos del Boton Asistencia #1
     
-    def vista_asistencia(self):
-    # 1. Indicamos al sistema que entramos en modo asistencia
-        self.vista_actual = "asistencia"
-        
-        # 2. Hacemos visible el selector de grados si estaba oculto
-        self.frame_grados.pack(side="top", fill="x", pady=10)
-        
-        # 3. Reconfiguramos las columnas del Treeview existente
-        columnas_asistencia = ("id", "nombre", "lunes", "martes", "miercoles", "jueves", "viernes")
-        self.tabla.configure(columns=columnas_asistencia)
-        
-        # 4. Definimos los encabezados y anchos de columna
-        self.tabla.heading("id", text="ID / Cédula")
-        self.tabla.heading("nombre", text="Estudiante")
-        self.tabla.heading("lunes", text="Lunes")
-        self.tabla.heading("martes", text="Martes")
-        self.tabla.heading("miercoles", text="Miércoles")
-        self.tabla.heading("jueves", text="Jueves")
-        self.tabla.heading("viernes", text="Viernes")
-        
-        # Ajustamos tamaños (puedes adaptarlo a tu diseño)
-        self.tabla.column("#0", width=0, stretch=False) # Ocultar columna por defecto
-        self.tabla.column("id", width=80, anchor="center")
-        self.tabla.column("nombre", width=200, anchor="w")
-        for dia in ["lunes", "martes", "miercoles", "jueves", "viernes"]:
-            self.tabla.column(dia, width=80, anchor="center")
-            
-        # 5. Vinculamos el doble clic para poder interactuar y cambiar la asistencia
-        self.tabla.bind("<Double-1>", self.cambiar_estatus_asistencia)
-        
-        # 6. Cargamos los datos del grado seleccionado actualmente
-        self.cargar_datos_segun_vista()
-        
-    
+   
     def ejecutar_eliminar_alumno(self):
         item_seleccionado = self.tabla.selection()
         if not item_seleccionado: return
@@ -713,7 +666,7 @@ class VentanaAsistenciaModerna(ctk.CTkToplevel):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.title("Módulo de Asistencia por Secciones")
-        self.geometry("950://600")
+        self.geometry("950x600")
         self.grab_set() # Bloquea la ventana de atrás hasta cerrar esta
         
         self.fecha_seleccionada = datetime.now().strftime("%Y-%m-%d")
