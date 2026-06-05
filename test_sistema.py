@@ -31,7 +31,7 @@ class TestSistemaEscolar(unittest.TestCase):
     def test_01_columna_edad_inexistente(self):
         """Detecta si el sistema falla al no encontrar la columna 'edad'."""
         columnas = ['Número de lista', 'Estudiante', 'Dia_Nac', 'Mes_Nac', 'Anio_Nac']
-        df_simulado = pd.DataFrame([[1, "Juan Perez", "10", "05", "2015"]], columns=columnas)
+        df_simulado = pd.DataFrame([[1, "Juan Perez", "10", "05", "205"]], columns=columnas)
         archivo_test = 'temp_test_schema.csv'
         df_simulado.to_csv(archivo_test, index=False)
         
