@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import re
 from openpyxl import load_workbook
 from datetime import datetime
 # =========================================================================
@@ -44,12 +45,17 @@ def obtener_valor(row, idx):
     return ""
 
 def convertir_nombre_grado_a_numero(grado_texto):
-    """Convierte '1er Grado' o '1er_grado' a un entero (1)"""
+    """Convierte '1er Grado' o '1er_grado' a un entero (1) de forma segura"""
     txt = grado_texto.lower()
     for num, nombre in CSV_SALIDA.items():
-        if str(num) in txt or nombre.split('_')[0] in txt:
+        prefijo = nombre.split('_')[0] # '1er', '2do', etc.
+        
+        patron_numero_exacto = r'(?<!\d)' + str(num) + r'(?!\d)'
+        
+        if re.search(patron_numero_exacto, txt) or prefijo in txt:
             return num
     return None
+
 def calcular_edad(dia_nac, mes_nac, anio_nac):
     """Calcula la edad exacta basada en la fecha actual del sistema"""
     try:

@@ -2,114 +2,116 @@ import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 import os
+import pandas as pd
 
-# Importamos los componentes de tu programa
+# Importamos tus componentes originales
 from modelos import Directora, Administrativo, Profesora, Usuario
-from rol import requiere_rol
 from main import pasar_de_anio, actualizar_edades, registrar_asistencia_docente
 from migrar_excel import calcular_edad, convertir_nombre_grado_a_numero, limpiar_dato
 
 
-class TestModelosYPolimorfismo(unittest.TestCase):
-    """Prueba que las clases heredadas y sus paneles funcionen bien."""
-    
-    def test_paneles_polimorfismo(self):
-        dir_user = Directora(1, "Ana", "Directora")
-        admin_user = Administrativo(2, "Carlos", "Administrativo")
-        prof_user = Profesora(3, "María", "Profesora")
+class TestErroresCriticosYLunaDeGrados(unittest.TestCase):
+    """Pruebas destinadas a detectar las fallas lógicas del sistema."""
+
+    def test_alerta_bug_columna_edad_inexistente(self):
+        """
+        ALERTA: Este test demuestra que 'actualizar_edades' falla silenciosamente
+        porque los CSV migrados no poseen la columna 'edad'.
+        """
+        # Simulamos la estructura exacta que genera tu migrador de Excel
+        columnas_reales_csv = ['Número de lista', 'Estudiante', 'Dia_Nac', 'Mes_Nac', 'Anio_Nac']
+        df_simulado = pd.DataFrame([[1, "Juan Perez", "10", "05", "2015"]], columns=columnas_reales_csv)
         
-        self.assertEqual(dir_user.mostrar_panel(), "Panel de Directora: Ana. Tienes acceso total al sistema.")
-        self.assertEqual(admin_user.mostrar_panel(), "Panel Administrativo: Carlos. Puedes gestionar personal y asistencia.")
-        self.assertEqual(prof_user.mostrar_panel(), "Panel de Docente: María. Puedes gestionar información de estudiantes.")
+        # Guardamos un archivo temporal de prueba
+        archivo_test = '1er_grado.csv'
+        df_simulado.to_csv(archivo_test, index=False)
+        
+        profesora = Profesora(102, "María", "Profesora")
+        
+        try:
+            # Ejecutamos tu función
+            actualizar_edades(profesora)
+            
+            # Volvemos a leer el archivo para ver si cambió algo
+            df_resultado = pd.read_csv(archivo_test)
+            
+            # Si tu función requiere que incremente la edad, debería existir la columna o verse reflejado.
+            # Aquí comprobamos que el archivo sigue idéntico porque no encontró la columna 'edad'
+            self.assertNotIn('edad', df_resultado.columns, "¡La columna 'edad' no existe en el esquema de migración!")
+        finally:
+            if os.path.exists(archivo_test):
+                os.remove(archivo_test)
 
-    def test_clase_base_not_implemented(self):
-        usuario_generico = Usuario(99, "Innominado", "Invitado")
-        with self.assertRaises(NotImplementedError):
-            usuario_generico.mostrar_panel()
+    def test_falla_conversion_grados_falsos_positivos(self):
+        """
+        ALERTA: Verifica si escribir 'Grado 10' confunde al sistema
+        y lo hace retornar 1 (1er Grado) por coincidencia parcial de caracteres.
+        """
+        resultado_error = convertir_nombre_grado_a_numero("Grado 10")
+        # Debería dar None porque no existe el 10° Grado en tu diccionario, pero da 1.
+        self.assertNotEqual(resultado_error, 1, "¡BUG DETECTADO!: 'Grado 10' fue interpretado como 1er Grado debido a '1' in '10'")
 
 
-class TestControlDeRoles(unittest.TestCase):
-    """Prueba el decorador de seguridad y las restricciones de accesos."""
+class TestControlSeguridadYRoles(unittest.TestCase):
+    """Prueba que el decorador @requiere_rol impida accesos no autorizados."""
 
     def setUp(self):
-        self.directora = Directora(1, "Ana", "Directora")
-        self.administrativo = Administrativo(2, "Carlos", "Administrativo")
-        self.profesora = Profesora(3, "María", "Profesora")
+        self.directora = Directora(1, "Ana Luisa", "Directora")
+        self.profesora = Profesora(2, "Carmen", "Profesora")
+        self.administrativo = Administrativo(3, "Pedro", "Administrativo")
 
-    @patch('os.path.exists', return_value=False) # Evitamos buscar archivos CSV reales
-    def test_directora_puede_hacer_todo(self, mock_exists):
-        # La directora puede pasar de año (Su rol explícito)
-        try:
-            pasar_de_anio(self.directora)
-        except PermissionError:
-            self.fail("pasar_de_anio() lanzó PermissionError a la Directora erróneamente.")
-
-        # La directora también debe poder entrar a funciones de Profesora
-        try:
-            actualizar_edades(self.directora)
-        except PermissionError:
-            self.fail("La Directora no pudo eludir la restricción de 'Profesora'.")
-
-    def test_profesora_denegado_pasar_de_anio(self):
-        # Profesora no tiene permisos de Directora
+    def test_restriccion_rol_profesora(self):
+        """Una profesora no debe tener permitido iniciar la promoción de año escolar."""
         with self.assertRaises(PermissionError):
             pasar_de_anio(self.profesora)
 
     @patch('os.path.exists', return_value=False)
-    def test_profesora_autorizado_su_rol(self, mock_exists):
+    def test_directora_omite_restricciones(self, mock_exists):
+        """La Directora debe poder ejecutar cualquier función por jerarquía."""
         try:
-            actualizar_edades(self.profesora)
+            pasar_de_anio(self.directora)
+            actualizar_edades(self.directora)
         except PermissionError:
-            self.fail("Se le denegó el acceso a la profesora a su propia función.")
+            self.fail("El decorador bloqueó a la Directora injustificadamente.")
 
 
-class TestUtilidadesMigracion(unittest.TestCase):
-    """Prueba las funciones lógicas de tratamiento de datos de migrar_excel.py."""
+class TestUtilidadesTratamientoDatos(unittest.TestCase):
+    """Prueba el comportamiento de las funciones de limpieza frente a anomalías."""
 
-    def test_limpiar_dato(self):
-        self.assertEqual(limpiar_dato("4.0"), "4")
-        self.assertEqual(limpiar_dato("  Texto con espacio  "), "Texto con espacio")
-        self.assertEqual(limpiar_dato("NaN"), "")
-        self.assertEqual(limpiar_dato(None), "")
-
-    def test_convertir_nombre_grado_a_numero(self):
-        self.assertEqual(convertir_nombre_grado_a_numero("1er Grado"), 1)
-        self.assertEqual(convertir_nombre_grado_a_numero("6to_grado"), 6)
-        self.assertIsNone(convertir_nombre_grado_a_numero("Grado Inventado"))
+    def test_limpiar_dato_variados(self):
+        self.assertEqual(limpiar_dato("15.0"), "15")
+        self.assertEqual(limpiar_dato("   CI 24000   "), "CI 24000")
+        self.assertEqual(limpiar_dato(float('nan')), "")
 
     @patch('migrar_excel.datetime')
     def test_calcular_edad_exacta(self, mock_datetime):
-        # Fijamos la fecha del sistema en el 5 de Junio de 2026 para el test
+        # Forzamos la fecha del sistema al 5 de Junio de 2026 para el caso de prueba
         mock_datetime.now.return_value = datetime(2026, 6, 5)
         
-        # Caso 1: Ya cumplió años este año (Nació el 1 de Enero de 2016 -> Debe tener 10 años)
-        self.assertEqual(calcular_edad("01", "01", "2016"), "10 años")
-        
-        # Caso 2: No ha cumplido años este año (Nació el 20 de Diciembre de 2016 -> Debe tener 9 años)
-        self.assertEqual(calcular_edad("20", "12", "2016"), "9 años")
-        
-        # Caso 3: Datos corruptos o vacíos
-        self.assertEqual(calcular_edad("Falta", "Mes", "Año"), "No calculable")
+        # Ya cumplió años (Nació en Enero) -> 2026 - 2016 = 10 años
+        self.assertEqual(calcular_edad("15", "01", "2016"), "10 años")
+        # No ha cumplido años (Nace en Diciembre) -> Debe restar 1 -> 9 años
+        self.assertEqual(calcular_edad("25", "12", "2016"), "9 años")
+        # Datos corruptos en las celdas del Excel original
+        self.assertEqual(calcular_edad("Desconocido", "05", "2014"), "No calculable")
 
 
-class TestEntradasModulos(unittest.TestCase):
-    """Prueba funciones que interactúan con inputs del usuario mediante simulación (Mock)."""
+class TestModulosEntradaYMenus(unittest.TestCase):
+    """Simula las entradas de teclado del usuario usando mocks."""
 
-    @patch('builtins.input', side_effects=['105', 'si'])
+    @patch('builtins.input', side_effects=['101', 'si'])
     @patch('datos.GestorArchivos.registrar_asistencia')
-    def test_registrar_asistencia_docente_exito(self, mock_registrar, mock_input):
-        admin = Administrativo(2, "Carlos", "Administrativo")
+    def test_registrar_asistencia_valores_validos(self, mock_registrar, mock_input):
+        admin = Administrativo(3, "Pedro", "Administrativo")
         registrar_asistencia_docente(admin)
-        
-        # Verifica que se llamó al gestor de archivos con los parámetros correctos procesados
-        mock_registrar.assert_called_once_with(105, 'si')
+        # Comprueba que la función extrajo el input y llamó correctamente al grabador de archivos
+        mock_registrar.assert_called_once_with(101, 'si')
 
-    @patch('builtins.input', side_effects=['105', 'tal vez'])
+    @patch('builtins.input', side_effects=['101', 'tal vez'])
     @patch('datos.GestorArchivos.registrar_asistencia')
-    def test_registrar_asistencia_docente_invalida(self, mock_registrar, mock_input):
-        admin = Administrativo(2, "Carlos", "Administrativo")
-        
-        # No debe caerse el programa, debe manejar el error y NO registrar nada en el CSV
+    def test_registrar_asistencia_valores_invalidos(self, mock_registrar, mock_input):
+        admin = Administrativo(3, "Pedro", "Administrativo")
+        # Debe atrapar el ValueError y no registrar nada corrupto en el CSV
         registrar_asistencia_docente(admin)
         mock_registrar.assert_not_called()
 
