@@ -31,7 +31,7 @@ class TestSistemaEscolar(unittest.TestCase):
     def test_01_columna_edad_inexistente(self):
         """Detecta si el sistema falla al no encontrar la columna 'edad'."""
         columnas = ['Número de lista', 'Estudiante', 'Dia_Nac', 'Mes_Nac', 'Anio_Nac']
-        df_simulado = pd.DataFrame([[1, "Juan Perez", "10", "05", "205"]], columns=columnas)
+        df_simulado = pd.DataFrame([[1, "Juan Perez", "10", "05", "2015"]], columns=columnas)
         archivo_test = 'temp_test_schema.csv'
         df_simulado.to_csv(archivo_test, index=False)
         
@@ -41,7 +41,6 @@ class TestSistemaEscolar(unittest.TestCase):
             try:
                 actualizar_edades(profesora)
                 df_res = pd.read_csv(archivo_test)
-                # Verificamos que no se rompa, pero que sepamos que 'edad' no se creó mágicamente
                 self.assertNotIn('edad', df_res.columns)
             finally:
                 if os.path.exists(archivo_test): os.remove(archivo_test)
@@ -49,7 +48,6 @@ class TestSistemaEscolar(unittest.TestCase):
     def test_02_conversion_grados_falsos_positivos(self):
         """Verifica que 'Grado 10' no sea confundido con 'Grado 1'."""
         resultado = convertir_nombre_grado_a_numero("Grado 10")
-        # Si tu diccionario solo llega al 6, esto debería ser None o Error, no 1.
         self.assertNotEqual(resultado, 1, "Error: 'Grado 10' interpretado erróneamente como 1er Grado.")
 
     #BLOQUE 2: SEGURIDAD Y ROLES
@@ -81,9 +79,7 @@ class TestSistemaEscolar(unittest.TestCase):
     def test_06_calculo_edad_exacta(self, mock_dt):
         """Calcula la edad basándose en si ya pasó el cumpleaños en el año actual."""
         mock_dt.now.return_value = datetime(2026, 6, 5)
-        # Enero 2016 -> Ya cumplió 10
         self.assertEqual(calcular_edad("15", "01", "2016"), "10 años")
-        # Diciembre 2016 -> Tiene 9 (cumple en el futuro)
         self.assertEqual(calcular_edad("25", "12", "2016"), "9 años")
 
     #BLOQUE 4: INTERFAZ DE USUARIO (MOCKS)
