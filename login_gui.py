@@ -4,7 +4,8 @@ from tkinter import ttk
 import pandas as pd
 import os
 import migrar_excel
-
+import calendar
+from datos import GestorArchivos
 # Configuración del tema visual global
 ctk.set_appearance_mode("System")  
 ctk.set_default_color_theme("blue")
@@ -627,6 +628,200 @@ class AppEscuela(ctk.CTk):
         self.frame_actual = FrameMenuPrincipal(self, nombre, rol, callback_cerrar_sesion=self.mostrar_pantalla_login)
         self.frame_actual.pack(fill="both", expand=True)
 
+# =========================================================================
+# COMPONENTE: CALENDARIO PERSONALIZADO EN CUSTOMTKINTER
+# =========================================================================
+class CTkCalendario(ctk.CTkFrame):
+    def __init__(self, master, callback_fecha, **kwargs):
+        super().__init__(master, **kwargs)
+        self.callback_fecha = callback_fecha
+        self.hoy = datetime.now()
+        self.anio_actual = self.hoy.year
+        self.mes_actual = self.hoy.month
+        
+        # Navegación del mes
+        self.frame_nav = ctk.CTkFrame(self, fg_color="transparent")
+        self.frame_nav.pack(fill="x", pady=5)
+        
+        self.btn_prev = ctk.CTkButton(self.frame_nav, text="◀", width=30, fg_color="#2b2b2b", command=self.mes_anterior)
+        self.btn_prev.pack(side="left", padx=5)
+        
+        self.lbl_mes = ctk.CTkLabel(self.frame_nav, text="", font=("Helvetica", 14, "bold"))
+        self.lbl_mes.pack(side="left", expand=True)
+        
+        self.btn_next = ctk.CTkButton(self.frame_nav, text="▶", width=30, fg_color="#2b2b2b", command=self.mes_siguiente)
+        self.btn_next.pack(side="right", padx=5)
+        
+        self.frame_dias = ctk.CTkFrame(self)
+        self.frame_dias.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        self.dibujar_calendario()
+        
+    def dibujar_calendario(self):
+        for widget in self.frame_dias.winfo_children():
+            widget.destroy()
+            
+        meses = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        self.lbl_mes.configure(text=f"{meses[self.mes_actual]} {self.anio_actual}")
+        
+        dias_semana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+        for col, dia in enumerate(dias_semana):
+            ctk.CTkLabel(self.frame_dias, text=dia, font=("Helvetica", 11, "bold"), text_color="gray").grid(row=0, column=col, pady=2)
+            
+        cal = calendar.monthcalendar(self.anio_actual, self.mes_actual)
+        for fila, semana in enumerate(cal):
+            for col, dia in enumerate(semana):
+                if dia != 0:
+                    es_hoy = (dia == self.hoy.day and self.mes_actual == self.hoy.month and self.anio_actual == self.hoy.year)
+                    fg = "#1f538d" if es_hoy else "#3a3a3a"
+                    
+                    btn = ctk.CTkButton(
+                        self.frame_dias, text=str(dia), width=35, height=35, fg_color=fg,
+                        command=lambda d=dia: self.seleccionar_dia(d)
+                    )
+                    btn.grid(row=fila+1, column=col, padx=2, pady=2)
+                    
+    def mes_anterior(self):
+        self.mes_actual -= 1
+        if self.mes_actual == 0:
+            self.mes_actual = 12
+            self.anio_actual -= 1
+        self.dibujar_calendario()
+        
+    def mes_siguiente(self):
+        self.mes_actual += 1
+        if self.mes_actual == 13:
+            self.mes_actual = 1
+            self.anio_actual += 1
+        self.dibujar_calendario()
+        
+    def seleccionar_dia(self, dia):
+        fecha_str = f"{self.anio_actual}-{self.mes_actual:02d}-{dia:02d}"
+        self.callback_fecha(fecha_str)
+
+
+# =========================================================================
+# VENTANA PRINCIPAL DE CONTROL DE ASISTENCIA
+# =========================================================================
+class VentanaAsistenciaModerna(ctk.CTkToplevel):
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.title("Módulo de Asistencia por Secciones")
+        self.geometry("950://600")
+        self.grab_set() # Bloquea la ventana de atrás hasta cerrar esta
+        
+        self.fecha_seleccionada = datetime.now().strftime("%Y-%m-%d")
+        self.grados_disponibles = {
+            "1er Grado": "1er_grado.csv", "2do Grado": "2do_grado.csv",
+            "3er Grado": "3er_grado.csv", "4to Grado": "4to_grado.csv",
+            "5to Grado": "5to_grado.csv", "6to Grado": "6to_grado.csv"
+        }
+        self.controles_dinamicos = {} # Almacena los estados de los botones para guardar
+        
+        # Contenedor Izquierdo: Calendario informativo
+        self.frame_izq = ctk.CTkFrame(self, width=320)
+        self.frame_izq.pack(side="left", fill="y", padx=10, pady=10)
+        
+        self.lbl_info_fecha = ctk.CTkLabel(self.frame_izq, text=f"Fecha: {self.fecha_seleccionada}", font=("Helvetica", 16, "bold"), text_color="#1f538d")
+        self.lbl_info_fecha.pack(pady=10)
+        
+        self.calendario = CTkCalendario(self.frame_izq, callback_fecha=self.cambiar_fecha)
+        self.calendario.pack(padx=10, pady=5)
+        
+        self.btn_guardar = ctk.CTkButton(self.frame_izq, text="💾 Guardar Todo Este Día", fg_color="#228B22", hover_color="#1e7b1e", font=("Helvetica", 14, "bold"), command=self.guardar_asistencia_general)
+        self.btn_guardar.pack(fill="x", padx=20, pady=25)
+
+        # Contenedor Derecho: El panel de Secciones Separadas
+        self.frame_der = ctk.CTkFrame(self)
+        self.frame_der.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+        
+        self.tabview = ctk.CTkTabview(self.frame_der)
+        self.tabview.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Inicializar pestañas por sección
+        for nombre_grado in self.grados_disponibles.keys():
+            self.tabview.add(nombre_grado)
+            
+        self.cargar_interfaz_estudiantes()
+
+    def cambiar_fecha(self, nueva_fecha):
+        self.fecha_seleccionada = nueva_fecha
+        self.lbl_info_fecha.configure(text=f"Fecha: {self.fecha_seleccionada}")
+        self.cargar_interfaz_estudiantes()
+
+    def cargar_interfaz_estudiantes(self):
+        self.controles_dinamicos.clear()
+        
+        for nombre_grado, archivo_csv in self.grados_disponibles.items():
+            pestana = self.tabview.tab(nombre_grado)
+            
+            # Limpiar alumnos anteriores en la pestaña
+            for widget in pestana.winfo_children():
+                widget.destroy()
+                
+            if not os.path.exists(archivo_csv):
+                ctk.CTkLabel(pestana, text=f"Falta migrar o generar el archivo '{archivo_csv}'", text_color="orange").pack(pady=20)
+                continue
+                
+            # Crear contenedor scrollable para la lista
+            scroll_frame = ctk.CTkScrollableFrame(pestana)
+            scroll_frame.pack(fill="both", expand=True, padx=5, pady=5)
+            
+            # Encabezados de tabla estructurada
+            frame_header = ctk.CTkFrame(scroll_frame, fg_color="#2b2b2b")
+            frame_header.pack(fill="x", pady=2)
+            ctk.CTkLabel(frame_header, text="Estudiante / Cédula", font=("Helvetica", 12, "bold"), anchor="w").pack(side="left", padx=10, expand=True, fill="x")
+            ctk.CTkLabel(frame_header, text="Estatus de Asistencia", font=("Helvetica", 12, "bold"), anchor="center").pack(side="right", padx=70)
+
+            # Obtener datos usando el Gestor de Archivos
+            alumnos = GestorArchivos.obtain_asistencia_estudiantes(self.fecha_seleccionada, archivo_csv) if hasattr(GestorArchivos, 'obtain_asistencia_estudiantes') else GestorArchivos.obtener_asistencia_estudiantes(self.fecha_seleccionada, archivo_csv)
+            
+            self.controles_dinamicos[archivo_csv] = []
+            
+            for al in alumnos:
+                row_frame = ctk.CTkFrame(scroll_frame, fg_color="transparent")
+                row_frame.pack(fill="x", pady=4)
+                
+                # Nombre y cédula a la izquierda
+                info_text = f"{al['Estudiante']}\n(CI: {al['Cédula Identidad']})"
+                ctk.CTkLabel(row_frame, text=info_text, justify="left", anchor="w", font=("Helvetica", 11)).pack(side="left", padx=10)
+                
+                # Selector de estados (Asistió, No asistió, Tiene justificativo) a la derecha
+                var_estado = ctk.StringVar(value=al['Estado'])
+                selector = ctk.CTkSegmentedButton(
+                    row_frame, 
+                    values=["Asistió", "No asistió", "Tiene justificativo"],
+                    variable=var_estado,
+                    selected_color="#1f538d",
+                    selected_text_color="white"
+                )
+                selector.pack(side="right", padx=10, pady=5)
+                
+                # Guardamos la referencia del dato para extraer el valor al presionar el botón guardar
+                self.controles_dinamicos[archivo_csv].append({
+                    'Cédula Identidad': al['Cédula Identidad'],
+                    'Estudiante': al['Estudiante'],
+                    'variable': var_estado
+                })
+
+    def guardar_asistencia_general(self):
+        try:
+            for archivo_csv, lista_controles in self.controles_dinamicos.items():
+                registros_a_guardar = []
+                for ctrl in lista_controles:
+                    registros_a_guardar.append({
+                        'Cédula Identidad': ctrl['Cédula Identidad'],
+                        'Estudiante': ctrl['Estudiante'],
+                        'Estado': ctrl['variable'].get()
+                    })
+                if registros_a_guardar:
+                    GestorArchivos.guardar_asistencia_estudiantes(self.fecha_seleccionada, archivo_csv, registros_asistencia=registros_a_guardar)
+            messagebox.showinfo("Éxito", f"Asistencia del día {self.fecha_seleccionada} registrada correctamente en el sistema.", parent=self)
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo guardar la asistencia: {e}", parent=self)
+            
 if __name__ == "__main__":
     app = AppEscuela()
     app.mainloop()
+    
+    
